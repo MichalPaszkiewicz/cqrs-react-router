@@ -1,0 +1,37 @@
+{
+    "name": "cqrs-react-router",
+    "author": "Michal Paszkiewicz",
+    "license": "MIT",
+    "version": "0.1.4",
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "scripts": {
+        "test": "jest",
+        "watchtest": "jest --watch"
+    },
+    "dependencies": {
+        "@types/jest": "^19.2.2",
+        "@types/react": "^15.0.20",
+        "@types/react-dom": "^0.14.18",
+        "react": "^15.3.2",
+        "react-dom": "^15.3.2"
+    },
+    "devDependencies": {
+        "jest": "*",
+        "typescript": "*",    
+        "ts-loader": "^2.0.3"   
+    },
+    "jest": {
+        "moduleFileExtensions": [
+        "ts",
+        "tsx",
+        "js"
+        ],
+        "transform": {
+            "^.+\\.(ts|tsx)$": "<rootDir>/preprocessor.js"
+        },
+        "testMatch": [
+        "**/tests/**.(ts|tsx|js)"
+        ]
+    }
+}
