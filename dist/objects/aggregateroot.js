@@ -7,6 +7,10 @@ var AggregateRoot = (function () {
     AggregateRoot.prototype.attachActionStore = function (actionStore) {
         this._actionStore = actionStore;
     };
+    AggregateRoot.prototype.storeAction = function (action) {
+        this.applyAction(action);
+        this._actionStore.storeAction(action);
+    };
     return AggregateRoot;
 }());
 exports.AggregateRoot = AggregateRoot;

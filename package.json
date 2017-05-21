@@ -2,13 +2,18 @@
     "name": "cqrs-react-router",
     "author": "Michal Paszkiewicz",
     "license": "MIT",
-    "version": "0.1.4",
+    "version": "0.1.5",
     "main": "./dist/index.js",
     "types": "./dist/index.d.ts",
     "scripts": {
         "test": "jest",
-        "watchtest": "jest --watch"
+        "watchtest": "jest --watch",
+        "build": "tsc"
     },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/MichalPaszkiewicz/cqrs-react-router.git"
+    },    
     "dependencies": {
         "@types/jest": "^19.2.2",
         "@types/react": "^15.0.20",

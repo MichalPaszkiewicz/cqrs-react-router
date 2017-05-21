@@ -1,9 +1,11 @@
 import {IAmACommand} from "../interfaces/iamacommand";
+import {IAmAnAction} from "../interfaces/iamanaction";
 import {IAmACommandHandler} from "../interfaces/iamacommandhandler";
 import {View} from "../objects/view";
 import {DomainError} from "../objects/domainerror";
 import {DomainService} from "../services/domainservice";
 import {ActionStore} from "../services/actionstore";
+import {ClockDate} from "../helpers/clock";
 
 class ViewSubscriber{
     constructor(public viewName: string, public callback: (view: View) => void){}
@@ -19,6 +21,7 @@ export class ApplicationService{
     }
 
     private _commandHandlers: IAmACommandHandler[] = [];
+    private _viewTypes: {new(): View}[] = [];
     private _views: View[] = [];
     private _viewSubscribers: ViewSubscriber[] = [];
     private _actionStore: ActionStore = new ActionStore();    
@@ -34,6 +37,19 @@ export class ApplicationService{
                 })
             });
         });
+    }
+
+    reset(){
+        var self = this;
+        self._views = [];
+        self._viewTypes.forEach((viewType) => {
+            self._views.push(new viewType());
+        });
+    }
+
+    replayActions(finalTime?: ClockDate){
+        this.reset();
+        this._actionStore.replayActions(finalTime);
     }
 
     handleCommand(command: IAmACommand, callback?: (command: IAmACommand) => void){
@@ -65,6 +81,7 @@ export class ApplicationService{
     }
 
     registerView<T extends View>(view: {new(): View}){
+        this._viewTypes.push(view);
         this._views.push(new view());
     }
 
@@ -80,5 +97,10 @@ export class ApplicationService{
         }
 
         return viewsOfName[0];
+    }
+
+    storeAction(action: IAmAnAction){
+        this._domainService.applyActionToAllAggregates(action);
+        this._actionStore.storeAction(action);
     }
 }

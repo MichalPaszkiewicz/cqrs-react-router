@@ -5,5 +5,6 @@ export declare abstract class AggregateRoot {
     _actionStore: ActionStore;
     constructor(id?: string);
     attachActionStore(actionStore: ActionStore): void;
+    storeAction(action: IAmAnAction): void;
     abstract applyAction(action: IAmAnAction): any;
 }

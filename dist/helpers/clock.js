@@ -19,6 +19,26 @@ var ClockDate = (function () {
     ClockDate.prototype.isAfter = function (date) {
         return this.getTime() > date.getTime();
     };
+    ClockDate.prototype.addDays = function (days) {
+        this.Date.setTime(this.getTime() + days * 24 * 60 * 60 * 1000);
+        return this;
+    };
+    ClockDate.prototype.addHours = function (hours) {
+        this.Date.setTime(this.getTime() + hours * 60 * 60 * 1000);
+        return this;
+    };
+    ClockDate.prototype.addMinutes = function (minutes) {
+        this.Date.setTime(this.getTime() + minutes * 60 * 1000);
+        return this;
+    };
+    ClockDate.prototype.addSeconds = function (seconds) {
+        this.Date.setTime(this.getTime() + seconds * 1000);
+        return this;
+    };
+    ClockDate.prototype.addMilliSeconds = function (milliseconds) {
+        this.Date.setTime(this.getTime() + milliseconds);
+        return this;
+    };
     ClockDate.fromTicks = function (ticks) {
         var now = new Date(ticks);
         return new ClockDate(now.getFullYear(), (now.getMonth() + 1) % 12, now.getDate(), now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds());

@@ -10,9 +10,20 @@ var ActionStore = (function () {
             callback(action);
         });
     };
+    ActionStore.prototype.replayActions = function (finalTime) {
+        var self = this;
+        self._actions.filter(function (action) {
+            return finalTime == null
+                || action.created == null
+                || action.created.isBefore(finalTime);
+        }).forEach(function (action) {
+            self._onActionStoredEvents.forEach(function (callback) {
+                callback(action);
+            });
+        });
+    };
     ActionStore.prototype.onActionStored = function (callback) {
         this._onActionStoredEvents.push(callback);
-        0;
     };
     ActionStore.prototype.clearOnActionStoredEvents = function () {
         this._onActionStoredEvents = [];

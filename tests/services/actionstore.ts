@@ -1,9 +1,10 @@
 import { IAmAnAction } from "../../src/interfaces/iamanaction";
 import { ActionStore } from "../../src/services/actionstore";
+import {Clock} from "../../src/helpers/clock";
 
 class TestAction implements IAmAnAction{
-    name:"testAction";
-    
+    name="testAction";
+    created=Clock.now();
     constructor(public id: string){
 
     }

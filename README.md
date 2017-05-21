@@ -115,3 +115,14 @@ export class App extends React.Component<AppProps, AppState>{
 ```
 
 
+## replay actions! ##
+```javascript
+testApplicationService.replayActions();
+```
+
+
+## apply actions from external sources ##
+```javascript
+testApplicationService.storeAction(new TestAction("123"));
+```
+

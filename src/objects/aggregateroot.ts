@@ -15,5 +15,10 @@ export abstract class AggregateRoot{
         this._actionStore = actionStore;
     }
 
+    storeAction(action: IAmAnAction){
+        this.applyAction(action);
+        this._actionStore.storeAction(action);
+    }
+
     abstract applyAction(action: IAmAnAction);
 }

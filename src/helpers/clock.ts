@@ -17,6 +17,36 @@ export class ClockDate{
         return this.getTime() > date.getTime();
     }
 
+    addDays(days): ClockDate{
+        this.Date.setTime(this.getTime() + days * 24 * 60 * 60 * 1000)
+
+        return this;
+    }
+
+    addHours(hours: number): ClockDate{
+        this.Date.setTime(this.getTime() + hours * 60 * 60 *1000)
+
+        return this;
+    }
+
+    addMinutes(minutes: number): ClockDate{
+        this.Date.setTime(this.getTime() + minutes * 60 * 1000);
+
+        return this;
+    }
+
+    addSeconds(seconds: number): ClockDate{
+        this.Date.setTime(this.getTime() + seconds * 1000);
+
+        return this;
+    }
+
+    addMilliSeconds(milliseconds: number): ClockDate{
+        this.Date.setTime(this.getTime() + milliseconds);
+
+        return this;
+    }
+
     constructor(year: number, month: number, day: number, hour: number = 0, minutes: number = 0, seconds: number = 0, milliseconds: number = 0){
         this.Date = new Date(year, (month + 11) % 12, day, hour, minutes, seconds, milliseconds);
     }

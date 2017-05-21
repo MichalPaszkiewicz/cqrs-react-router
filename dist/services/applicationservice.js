@@ -12,6 +12,7 @@ var ViewSubscriber = (function () {
 var ApplicationService = (function () {
     function ApplicationService() {
         this._commandHandlers = [];
+        this._viewTypes = [];
         this._views = [];
         this._viewSubscribers = [];
         this._actionStore = new actionstore_1.ActionStore();
@@ -36,6 +37,17 @@ var ApplicationService = (function () {
         enumerable: true,
         configurable: true
     });
+    ApplicationService.prototype.reset = function () {
+        var self = this;
+        self._views = [];
+        self._viewTypes.forEach(function (viewType) {
+            self._views.push(new viewType());
+        });
+    };
+    ApplicationService.prototype.replayActions = function (finalTime) {
+        this.reset();
+        this._actionStore.replayActions(finalTime);
+    };
     ApplicationService.prototype.handleCommand = function (command, callback) {
         var self = this;
         var commandHandlersOfName = self._commandHandlers.filter(function (ch) { return ch.commandNames.some(function (cn) { return cn == command.name; }); });
@@ -58,6 +70,7 @@ var ApplicationService = (function () {
         this._commandHandlers.push(new commandHandler());
     };
     ApplicationService.prototype.registerView = function (view) {
+        this._viewTypes.push(view);
         this._views.push(new view());
     };
     ApplicationService.prototype.subscribe = function (viewName, callback) {
@@ -69,6 +82,10 @@ var ApplicationService = (function () {
             throw new domainerror_1.DomainError("no view registered with the name \"" + name + "\"");
         }
         return viewsOfName[0];
+    };
+    ApplicationService.prototype.storeAction = function (action) {
+        this._domainService.applyActionToAllAggregates(action);
+        this._actionStore.storeAction(action);
     };
     return ApplicationService;
 }());

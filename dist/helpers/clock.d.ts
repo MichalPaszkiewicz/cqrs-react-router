@@ -4,6 +4,11 @@ export declare class ClockDate {
     getTime(): number;
     isBefore(date: ClockDate): boolean;
     isAfter(date: ClockDate): boolean;
+    addDays(days: any): ClockDate;
+    addHours(hours: number): ClockDate;
+    addMinutes(minutes: number): ClockDate;
+    addSeconds(seconds: number): ClockDate;
+    addMilliSeconds(milliseconds: number): ClockDate;
     constructor(year: number, month: number, day: number, hour?: number, minutes?: number, seconds?: number, milliseconds?: number);
     static fromTicks(ticks: number): ClockDate;
 }

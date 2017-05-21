@@ -1,4 +1,5 @@
 import {IAmAnAction} from "../interfaces/iamanaction";
+import {ClockDate} from "../helpers/clock";
 
 export class ActionStore{
 
@@ -12,8 +13,21 @@ export class ActionStore{
         })
     }
 
+    replayActions(finalTime?: ClockDate){
+        var self = this;
+        self._actions.filter((action) => {
+            return finalTime == null 
+                || action.created == null   
+                || action.created.isBefore(finalTime);
+        }).forEach((action) => {
+            self._onActionStoredEvents.forEach((callback) => {
+                callback(action);
+            });
+        }); 
+    }
+
     onActionStored(callback: (action: IAmAnAction) => void){
-        this._onActionStoredEvents.push(callback);0
+        this._onActionStoredEvents.push(callback);
     }
 
     clearOnActionStoredEvents(){
