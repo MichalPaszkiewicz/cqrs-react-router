@@ -20,12 +20,25 @@ export class ApplicationService{
         return ApplicationService._instance;
     }
 
+    private _commandHandlerTypes: {new(): IAmACommandHandler}[] = [];
     private _commandHandlers: IAmACommandHandler[] = [];
     private _viewTypes: {new(): View}[] = [];
     private _views: View[] = [];
     private _viewSubscribers: ViewSubscriber[] = [];
     private _actionStore: ActionStore = new ActionStore();    
     private _domainService: DomainService = new DomainService(this._actionStore);
+    private _domainErrorHandlers: ((error: DomainError) => void)[] = [];
+
+    clear(){
+        this._commandHandlerTypes = [];
+        this._commandHandlers = [];
+        this._viewTypes = [];
+        this._views = [];
+        this._viewSubscribers = [];
+        this._actionStore = new ActionStore();
+        this._domainService = new DomainService(this._actionStore);
+        this._domainErrorHandlers = [];
+    }
 
     constructor() {
         var self = this;
@@ -37,6 +50,8 @@ export class ApplicationService{
                 })
             });
         });
+
+        ApplicationService._instance = this;
     }
 
     reset(){
@@ -52,6 +67,10 @@ export class ApplicationService{
         this._actionStore.replayActions(finalTime);
     }
 
+    onDomainError(callback: (error: DomainError) => void){
+        this._domainErrorHandlers.push(callback);
+    }
+
     handleCommand(command: IAmACommand, callback?: (command: IAmACommand) => void){
         var self = this;
 
@@ -64,29 +83,59 @@ export class ApplicationService{
         var handlersCount = commandHandlersOfName.length;
 
         commandHandlersOfName.forEach((ch) =>{
-            ch.handle(command, self._domainService,  () => {
-                handlersCount--;
+            try{
+                ch.handle(command, self._domainService,  () => {
+                    handlersCount--;
 
-                if(handlersCount == 0){
-                    if(callback){
-                        callback(command);
-                    }
-                }                
-            });
+                    if(handlersCount == 0){
+                        if(callback){
+                            callback(command);
+                        }
+                    }                
+                });
+            }
+            catch(error){
+                if(error.isADomainError && self._domainErrorHandlers.length > 0){
+                    self._domainErrorHandlers.forEach((deh) => {
+                        deh(error as DomainError);
+                    }); 
+                }
+                else{
+                    throw error;
+                }
+            }
         });
     }
 
     registerCommandHandler<T extends IAmACommandHandler>(commandHandler: {new(id?: string): T}){
+        if(this._commandHandlerTypes.some((cht) => cht == commandHandler)){
+            throw new DomainError("A command handler of this type has already been added");        
+        }
+        this._commandHandlerTypes.push(commandHandler);
         this._commandHandlers.push(new commandHandler());
     }
 
     registerView<T extends View>(view: {new(): View}){
         this._viewTypes.push(view);
-        this._views.push(new view());
+        var newView = new view();
+        this._views.push(newView);
+
+        this._viewSubscribers.filter((vs) => vs.viewName == newView.name).forEach((vs) => {
+            vs.callback(newView);
+        });
+        
     }
 
     subscribe(viewName: string, callback:(view: View) => void){
         this._viewSubscribers.push(new ViewSubscriber(viewName, callback));
+
+        this._views.filter((v) => v.name == viewName).forEach((v) => {
+            callback(v);
+        });
+    }
+
+    unsubscribe(callback:(view: View) => void){
+        this._viewSubscribers = this._viewSubscribers.filter((vs) => vs.callback != callback);
     }
 
     getView(name: string): View{

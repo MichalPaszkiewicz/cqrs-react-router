@@ -9,6 +9,7 @@ var DomainError = (function (_super) {
     function DomainError(message) {
         var _this = _super.call(this, message) || this;
         _this.message = message;
+        _this.isADomainError = true;
         _this.name = "DomainError";
         _this.stack = new Error().stack;
         return _this;

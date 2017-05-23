@@ -18,21 +18,13 @@ class TestAction implements IAmAnAction{
     constructor(public id: string) {}
 }
 
-class TestAggregateRoot extends AggregateRoot{
-    applyAction(action: IAmAnAction){
-
-    }
-
-    doThatTestThing(){
-        this.storeAction(new TestAction("123"));
-    }
-}
-
 class TestCommand implements IAmACommand{
     name = COMMAND_NAME
 }
 
 test("action replay puts view in correct state", () => {
+
+    ApplicationService.Instance.clear();
 
     class TestCommandHandler implements IAmACommandHandler{
         commandNames = [COMMAND_NAME];
@@ -42,6 +34,19 @@ test("action replay puts view in correct state", () => {
             });
         }
     }
+
+    var aggregateActionsHandled = 0;
+
+    class TestAggregateRoot extends AggregateRoot{
+        applyAction(action: IAmAnAction){
+            aggregateActionsHandled++;
+        }
+
+        doThatTestThing(){
+            this.storeAction(new TestAction("123"));
+        }
+    }
+
 
     var viewUpdateTriggers = 0;    
 
@@ -68,11 +73,10 @@ test("action replay puts view in correct state", () => {
 
     testApplicationService.registerView(TestView)
 
-
     testApplicationService.subscribe(TEST_VIEW_NAME, (view: TestView) => {
         expect(view.data.length).toBe(3);
         expect(view.data[0]).toBe(1);
-        expect(view.actionsHandled).toBe(1);
+        expect(view.actionsHandled).toBe(aggregateActionsHandled);
     });
 
     testApplicationService.registerCommandHandler(TestCommandHandler);
@@ -86,6 +90,20 @@ test("action replay puts view in correct state", () => {
 
 test("action replay replays all with null time", () => {
 
+    var aggregateActionsHandled = 0;
+
+    class TestAggregateRoot extends AggregateRoot{
+        applyAction(action: IAmAnAction){
+            aggregateActionsHandled++;
+        }
+
+        doThatTestThing(){
+            this.storeAction(new TestAction("123"));
+        }
+    }
+
+    ApplicationService.Instance.clear();
+
     class TestCommandHandler implements IAmACommandHandler{
         commandNames = [COMMAND_NAME];
         handle(command: TestCommand, domainService: DomainService, callback: (command: IAmACommand) => void){
@@ -124,7 +142,7 @@ test("action replay replays all with null time", () => {
     testApplicationService.subscribe(TEST_VIEW_NAME, (view: TestView) => {
         expect(view.data.length).toBe(3);
         expect(view.data[0]).toBe(1);
-        expect(view.actionsHandled).toBe(1);
+        expect(view.actionsHandled).toBe(aggregateActionsHandled);
     });
 
     testApplicationService.registerCommandHandler(TestCommandHandler);

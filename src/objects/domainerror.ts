@@ -1,4 +1,5 @@
 export class DomainError extends Error{
+    isADomainError = true;
 
     constructor(public message: string){
         super(message);

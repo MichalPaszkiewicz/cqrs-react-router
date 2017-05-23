@@ -11,12 +11,14 @@ var ViewSubscriber = (function () {
 }());
 var ApplicationService = (function () {
     function ApplicationService() {
+        this._commandHandlerTypes = [];
         this._commandHandlers = [];
         this._viewTypes = [];
         this._views = [];
         this._viewSubscribers = [];
         this._actionStore = new actionstore_1.ActionStore();
         this._domainService = new domainservice_1.DomainService(this._actionStore);
+        this._domainErrorHandlers = [];
         var self = this;
         self._actionStore.onActionStored(function (action) {
             self._views.forEach(function (view) {
@@ -26,6 +28,7 @@ var ApplicationService = (function () {
                 });
             });
         });
+        ApplicationService._instance = this;
     }
     Object.defineProperty(ApplicationService, "Instance", {
         get: function () {
@@ -37,6 +40,16 @@ var ApplicationService = (function () {
         enumerable: true,
         configurable: true
     });
+    ApplicationService.prototype.clear = function () {
+        this._commandHandlerTypes = [];
+        this._commandHandlers = [];
+        this._viewTypes = [];
+        this._views = [];
+        this._viewSubscribers = [];
+        this._actionStore = new actionstore_1.ActionStore();
+        this._domainService = new domainservice_1.DomainService(this._actionStore);
+        this._domainErrorHandlers = [];
+    };
     ApplicationService.prototype.reset = function () {
         var self = this;
         self._views = [];
@@ -48,6 +61,9 @@ var ApplicationService = (function () {
         this.reset();
         this._actionStore.replayActions(finalTime);
     };
+    ApplicationService.prototype.onDomainError = function (callback) {
+        this._domainErrorHandlers.push(callback);
+    };
     ApplicationService.prototype.handleCommand = function (command, callback) {
         var self = this;
         var commandHandlersOfName = self._commandHandlers.filter(function (ch) { return ch.commandNames.some(function (cn) { return cn == command.name; }); });
@@ -56,25 +72,51 @@ var ApplicationService = (function () {
         }
         var handlersCount = commandHandlersOfName.length;
         commandHandlersOfName.forEach(function (ch) {
-            ch.handle(command, self._domainService, function () {
-                handlersCount--;
-                if (handlersCount == 0) {
-                    if (callback) {
-                        callback(command);
+            try {
+                ch.handle(command, self._domainService, function () {
+                    handlersCount--;
+                    if (handlersCount == 0) {
+                        if (callback) {
+                            callback(command);
+                        }
                     }
+                });
+            }
+            catch (error) {
+                if (error.isADomainError && self._domainErrorHandlers.length > 0) {
+                    self._domainErrorHandlers.forEach(function (deh) {
+                        deh(error);
+                    });
                 }
-            });
+                else {
+                    throw error;
+                }
+            }
         });
     };
     ApplicationService.prototype.registerCommandHandler = function (commandHandler) {
+        if (this._commandHandlerTypes.some(function (cht) { return cht == commandHandler; })) {
+            throw new domainerror_1.DomainError("A command handler of this type has already been added");
+        }
+        this._commandHandlerTypes.push(commandHandler);
         this._commandHandlers.push(new commandHandler());
     };
     ApplicationService.prototype.registerView = function (view) {
         this._viewTypes.push(view);
-        this._views.push(new view());
+        var newView = new view();
+        this._views.push(newView);
+        this._viewSubscribers.filter(function (vs) { return vs.viewName == newView.name; }).forEach(function (vs) {
+            vs.callback(newView);
+        });
     };
     ApplicationService.prototype.subscribe = function (viewName, callback) {
         this._viewSubscribers.push(new ViewSubscriber(viewName, callback));
+        this._views.filter(function (v) { return v.name == viewName; }).forEach(function (v) {
+            callback(v);
+        });
+    };
+    ApplicationService.prototype.unsubscribe = function (callback) {
+        this._viewSubscribers = this._viewSubscribers.filter(function (vs) { return vs.callback != callback; });
     };
     ApplicationService.prototype.getView = function (name) {
         var viewsOfName = this._views.filter(function (v) { return v.name == name; });

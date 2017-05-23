@@ -7,6 +7,7 @@ import {IAmACommand} from "../../src/interfaces/iamacommand";
 import {IAmAnAction} from "../../src/interfaces/iamanaction";
 import {View} from "../../src/objects/view";
 import {Clock} from "../../src/helpers/clock";
+import {DomainError} from "../../src/objects/domainerror";
 
 const COMMAND_NAME: string = "testCommand";
 
@@ -36,6 +37,8 @@ class TestCommand implements IAmACommand{
 
 test("application service handles command", () => {
 
+    ApplicationService.Instance.clear();
+
     var handleCalls = 0;
 
     class TestCommandHandler implements IAmACommandHandler{
@@ -60,6 +63,7 @@ test("application service handles command", () => {
 
 test("view update is triggered by command sent to application service", () => {
 
+    ApplicationService.Instance.clear();
     class TestCommandHandler implements IAmACommandHandler{
         commandNames = [COMMAND_NAME];
         handle(command: TestCommand, domainService: DomainService, callback: (command: IAmACommand) => void){
@@ -105,6 +109,8 @@ test("view update is triggered by command sent to application service", () => {
 });
 
 test("second command is handling aggregate root logic", () => {
+
+    ApplicationService.Instance.clear();
 
     class TestAction implements IAmAnAction{
         name="singleAction";
@@ -160,6 +166,8 @@ test("second command is handling aggregate root logic", () => {
 
 test("external action updates existing aggregate root", () => {
 
+    ApplicationService.Instance.clear();
+
     var actionsApplied = 0;
 
     class ExtendedTestAggregateRoot extends TestAggregateRoot{
@@ -193,6 +201,9 @@ test("external action updates existing aggregate root", () => {
 });
 
 test("external action replayed when new aggregate root called for", () => {
+
+    ApplicationService.Instance.clear();
+
     var actionsApplied = 0;
 
     class ExtendedTestAggregateRoot extends TestAggregateRoot{
@@ -223,4 +234,76 @@ test("external action replayed when new aggregate root called for", () => {
     testApplicationService.handleCommand(new TestCommand());
 
     expect(actionsApplied).toBe(2);
+});
+
+test("application service can allow handling of domain errors", () => {
+    ApplicationService.Instance.clear();
+
+    var actionsApplied = 0;
+
+    class ExtendedTestAggregateRoot extends TestAggregateRoot{
+
+        applyAction(action: IAmAnAction){
+            actionsApplied++;
+        }
+
+        doStuff(){
+            throw new DomainError("some message about an error");
+        }
+    }
+
+    class TestCommandHandler implements IAmACommandHandler{
+        commandNames = [COMMAND_NAME];
+        handle(command: TestCommand, domainService: DomainService, callback: (command: IAmACommand) => void){
+            domainService.getAggregateRoot(ExtendedTestAggregateRoot, (ar) => {
+                ar.doStuff();
+            }, "123");
+        }
+    }
+    
+    var testApplicationService = new ApplicationService();
+    testApplicationService.registerCommandHandler(TestCommandHandler);
+
+    var callback = jest.fn();
+
+    testApplicationService.onDomainError(callback);
+
+    testApplicationService.handleCommand(new TestCommand());
+
+    expect(callback).toBeCalled();
+    expect(callback.mock.calls.length).toBe(1);
+});
+
+test("application service throws error on command handle if no handler specified", () => {
+    ApplicationService.Instance.clear();
+
+    var actionsApplied = 0;
+
+    class ExtendedTestAggregateRoot extends TestAggregateRoot{
+
+        applyAction(action: IAmAnAction){
+            actionsApplied++;
+        }
+
+        doStuff(){
+            throw new DomainError("some message about an error");
+        }
+    }
+
+    class TestCommandHandler implements IAmACommandHandler{
+        commandNames = [COMMAND_NAME];
+        handle(command: TestCommand, domainService: DomainService, callback: (command: IAmACommand) => void){
+            domainService.getAggregateRoot(ExtendedTestAggregateRoot, (ar) => {
+                ar.doStuff();
+            }, "123");
+        }
+    }
+    
+    var testApplicationService = new ApplicationService();
+    testApplicationService.registerCommandHandler(TestCommandHandler);
+
+    var callback = jest.fn();
+
+    expect(() => testApplicationService.handleCommand(new TestCommand())).toThrowError();
+
 });
