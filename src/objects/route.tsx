@@ -107,12 +107,16 @@ export class Route extends React.Component<RouteProps, any>{
 
 export class LinkProps{
     to: string;
+    onClick?: (e: React.MouseEvent<HTMLAnchorElement>) => void;
+    className?: string;
 }
 
 export class Link extends React.Component<LinkProps, null>{
-    handleClick = (e) => {
+    private _handleClick = (e) => {
         const {to} = this.props
-
+        if(this.props.onClick){
+            this.props.onClick(e);
+        }
         event.preventDefault()
         historyPush(to);
     }
@@ -120,7 +124,7 @@ export class Link extends React.Component<LinkProps, null>{
         const {to, children} = this.props;
 
         return (
-            <a href={to} onClick={(e) => this.handleClick(e)}>
+            <a className={this.props.className} href={to} onClick={(e) => this._handleClick(e)}>
                 {children}
             </a>
         )

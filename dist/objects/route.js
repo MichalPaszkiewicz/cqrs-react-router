@@ -93,8 +93,11 @@ var Link = (function (_super) {
     __extends(Link, _super);
     function Link() {
         var _this = _super !== null && _super.apply(this, arguments) || this;
-        _this.handleClick = function (e) {
+        _this._handleClick = function (e) {
             var to = _this.props.to;
+            if (_this.props.onClick) {
+                _this.props.onClick(e);
+            }
             event.preventDefault();
             historyPush(to);
         };
@@ -103,7 +106,7 @@ var Link = (function (_super) {
     Link.prototype.render = function () {
         var _this = this;
         var _a = this.props, to = _a.to, children = _a.children;
-        return (React.createElement("a", { href: to, onClick: function (e) { return _this.handleClick(e); } }, children));
+        return (React.createElement("a", { className: this.props.className, href: to, onClick: function (e) { return _this._handleClick(e); } }, children));
     };
     return Link;
 }(React.Component));

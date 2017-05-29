@@ -19,8 +19,10 @@ export declare class Route extends React.Component<RouteProps, any> {
 }
 export declare class LinkProps {
     to: string;
+    onClick?: (e: React.MouseEvent<HTMLAnchorElement>) => void;
+    className?: string;
 }
 export declare class Link extends React.Component<LinkProps, null> {
-    handleClick: (e: any) => void;
+    private _handleClick;
     render(): JSX.Element;
 }
