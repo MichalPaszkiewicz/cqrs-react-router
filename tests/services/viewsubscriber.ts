@@ -15,7 +15,7 @@ const TEST_VIEW_NAME = "testView";
 class TestAction implements IAmAnAction{
     name = TEST_ACTION_NAME;
     created=Clock.now();
-    constructor(public id: string) {
+    constructor(public aggregateID: string) {
                         
     }
 }

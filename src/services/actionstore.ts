@@ -35,6 +35,10 @@ export class ActionStore{
     }
 
     getActionsForID(id: string, callback: (actions: IAmAnAction[]) => void){
-        callback(this._actions.filter(a => a.id == id));
+        callback(this._actions.filter(a => a.aggregateID == id));
+    }
+
+    getAllActions(){
+        return this._actions;
     }
 }

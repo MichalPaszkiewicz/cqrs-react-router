@@ -8,6 +8,7 @@ import {IAmAnAction} from "../../src/interfaces/iamanaction";
 import {View} from "../../src/objects/view";
 import {Clock} from "../../src/helpers/clock";
 import {DomainError} from "../../src/objects/domainerror";
+import {CommandValidator} from "../../src/objects/commandvalidator";
 
 const COMMAND_NAME: string = "testCommand";
 
@@ -16,7 +17,7 @@ const TEST_ACTION_NAME = "testAction";
 class TestAction implements IAmAnAction{
     name = TEST_ACTION_NAME;
     created=Clock.now();
-    constructor(public id: string) {
+    constructor(public aggregateID: string) {
                         
     }
 }
@@ -114,7 +115,7 @@ test("second command is handling aggregate root logic", () => {
 
     class TestAction implements IAmAnAction{
         name="singleAction";
-        id="testAggregate";
+        aggregateID="testAggregate";
         created=Clock.now();
     }
 
@@ -306,4 +307,73 @@ test("application service throws error on command handle if no handler specified
 
     expect(() => testApplicationService.handleCommand(new TestCommand())).toThrowError();
 
+});
+
+class TestValidatorCommandHandler implements IAmACommandHandler{
+    commandNames = [COMMAND_NAME];
+
+    handle(command: TestCommand, domainService: DomainService, callback: (command: IAmACommand) => void){
+
+    }
+}
+
+test("application service validates with registered command validators", () => {
+    ApplicationService.Instance.clear();
+
+    var callback = jest.fn();
+
+    class TestCommandValidator extends CommandValidator{
+
+        commandNames = [COMMAND_NAME];
+
+        validate(command: IAmACommand){
+            callback();
+        }
+    }
+
+    ApplicationService.Instance.registerCommandValidator(TestCommandValidator);
+
+    ApplicationService.Instance.registerCommandHandler(TestValidatorCommandHandler)
+
+    ApplicationService.Instance.handleCommand(new TestCommand());
+
+    expect(callback).toBeCalled();
+    expect(callback.mock.calls.length).toBe(1);
+});
+
+test("application service gets views for registered command validator during validating", () => {
+    ApplicationService.Instance.clear();
+
+    var viewName = "blah";
+    var callback = jest.fn();    
+
+    class SecondTestCommandValidator extends CommandValidator{
+        commandNames = [COMMAND_NAME];
+
+        validate(command: IAmACommand){
+            this.getViewByName(viewName, (view: TestView)=> {
+                callback();
+                expect(view.testProperty).toBe(42);
+            });
+        }
+    }
+
+    class TestView extends View{
+        name = viewName
+
+        testProperty: 42;
+
+        handle(action: IAmAnAction){
+
+        }
+    }
+
+    ApplicationService.Instance.registerCommandValidator(SecondTestCommandValidator);
+    ApplicationService.Instance.registerCommandHandler(TestValidatorCommandHandler)
+    ApplicationService.Instance.registerView(TestView);
+
+    ApplicationService.Instance.handleCommand(new TestCommand());
+
+    expect(callback).toBeCalled();
+    expect(callback.mock.calls.length).toBe(1);  
 });

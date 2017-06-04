@@ -2,6 +2,7 @@
 var domainerror_1 = require("../objects/domainerror");
 var domainservice_1 = require("../services/domainservice");
 var actionstore_1 = require("../services/actionstore");
+var statereport_1 = require("../objects/statereport");
 var ViewSubscriber = (function () {
     function ViewSubscriber(viewName, callback) {
         this.viewName = viewName;
@@ -13,6 +14,8 @@ var ApplicationService = (function () {
     function ApplicationService() {
         this._commandHandlerTypes = [];
         this._commandHandlers = [];
+        this._commandValidatorTypes = [];
+        this._commandValidators = [];
         this._viewTypes = [];
         this._views = [];
         this._viewSubscribers = [];
@@ -66,6 +69,19 @@ var ApplicationService = (function () {
     };
     ApplicationService.prototype.handleCommand = function (command, callback) {
         var self = this;
+        try {
+            self._commandValidators
+                .filter(function (cv) { return cv.commandNames.some(function (cn) { return cn == command.name; }); })
+                .forEach(function (cv) { return cv.validate(command); });
+        }
+        catch (error) {
+            if (error.isADomainError && self._domainErrorHandlers.length > 0) {
+                self._domainErrorHandlers.forEach(function (deh) {
+                    deh(error);
+                });
+                return;
+            }
+        }
         var commandHandlersOfName = self._commandHandlers.filter(function (ch) { return ch.commandNames.some(function (cn) { return cn == command.name; }); });
         if (commandHandlersOfName.length == 0) {
             throw new domainerror_1.DomainError("no command handler registered for command of name \"" + command.name + "\"");
@@ -101,6 +117,22 @@ var ApplicationService = (function () {
         this._commandHandlerTypes.push(commandHandler);
         this._commandHandlers.push(new commandHandler());
     };
+    ApplicationService.prototype.registerCommandValidator = function (commandValidator) {
+        var self = this;
+        if (self._commandValidatorTypes.some(function (cv) { return cv == commandValidator; })) {
+            throw new domainerror_1.DomainError("This command validator has already been registered");
+        }
+        self._commandValidatorTypes.push(commandValidator);
+        var newCommandValidator = new commandValidator();
+        newCommandValidator.getViewByName = function (name, viewCallBack) {
+            self._views.forEach(function (v) {
+                if (v.name == name) {
+                    viewCallBack(v);
+                }
+            });
+        };
+        self._commandValidators.push(newCommandValidator);
+    };
     ApplicationService.prototype.registerView = function (view) {
         this._viewTypes.push(view);
         var newView = new view();
@@ -124,6 +156,9 @@ var ApplicationService = (function () {
             throw new domainerror_1.DomainError("no view registered with the name \"" + name + "\"");
         }
         return viewsOfName[0];
+    };
+    ApplicationService.prototype.getStateReport = function () {
+        return new statereport_1.StateReport(this._actionStore.getAllActions());
     };
     ApplicationService.prototype.storeAction = function (action) {
         this._domainService.applyActionToAllAggregates(action);

@@ -8,4 +8,5 @@ export declare class ActionStore {
     onActionStored(callback: (action: IAmAnAction) => void): void;
     clearOnActionStoredEvents(): void;
     getActionsForID(id: string, callback: (actions: IAmAnAction[]) => void): void;
+    getAllActions(): IAmAnAction[];
 }

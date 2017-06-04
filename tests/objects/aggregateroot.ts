@@ -7,7 +7,7 @@ class TestAction implements IAmAnAction{
         name="TestAction";
         created=Clock.now();
 
-        constructor(public id: string){
+        constructor(public aggregateID: string){
 
     }
 }

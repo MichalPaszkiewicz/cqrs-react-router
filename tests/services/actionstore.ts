@@ -5,7 +5,7 @@ import {Clock} from "../../src/helpers/clock";
 class TestAction implements IAmAnAction{
     name="testAction";
     created=Clock.now();
-    constructor(public id: string){
+    constructor(public aggregateID: string){
 
     }
 }
@@ -66,7 +66,7 @@ test("can subscribe to onActionStored", () => {
     var testActionStore = new ActionStore();
     testActionStore.onActionStored((action: TestAction) => {
         onActionStoredCalls++;
-        expect(action.id).toBe(aggregateID);
+        expect(action.aggregateID).toBe(aggregateID);
     });
 
     testActionStore.storeAction(testAction1);

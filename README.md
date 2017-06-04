@@ -1,5 +1,5 @@
-cqrs-react-router 
------------------------------------------
+# cqrs-react-router #
+
 cqrs-react-router is a library that will help you easily set up a CQRS/event sourcing system
 
 [![Build Status](https://travis-ci.org/MichalPaszkiewicz/cqrs-react-router.svg?branch=master)](https://travis-ci.org/MichalPaszkiewicz/cqrs-react-router)
@@ -86,6 +86,25 @@ To handle a command
 appService.handleCommand(new SomeCommand())
 ```
 
+To validate a command from views
+
+```javascript
+class TestCommandValidator extends CommandValidator{
+
+    commandNames = [COMMAND_NAME];
+
+    validate(command: IAmACommand){
+        // getViewByName fetches view from application service
+        this.getViewByName(viewName, (view: TestView)=> {
+            if(view.hasSomeUnexpectedValue){
+                throw new DomainError("oh noes, I didn't expect that!");
+            }
+        });
+    }
+}
+ApplicationService.Instance.registerCommandValidator(TestCommandValidator);
+```
+
 
 ## router ##
 use just like react-router, only it will inject an application service that you can subscribe to.
@@ -126,3 +145,23 @@ testApplicationService.replayActions();
 testApplicationService.storeAction(new TestAction("123"));
 ```
 
+# latest changes #
+## 1.0.0 ##
+Breaking change: the use of 'id' in IAmAnAction was a bit ambiguous, so IAmAnAction now has a property 'aggregateID' instead.
+
+`CommandValidator` abstract class now available and can be registered to your `ApplicationService`.
+
+You can now also get a report of your state from your application service with:
+
+```javascript
+var report = ApplicationService.Instance.getStateReport();
+```
+
+## 0.1.9 ##
+You can now handle domain errors neatly by subscribe a domain error event for your application service:
+```javascript
+ApplicationService.Instance.onDomainError((error: DomainError) => {
+    alert(error.message);
+});
+```
+Please not that this will not handle any generic errors - only errors specified as DomainErrors.

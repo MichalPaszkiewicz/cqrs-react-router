@@ -29,7 +29,10 @@ var ActionStore = (function () {
         this._onActionStoredEvents = [];
     };
     ActionStore.prototype.getActionsForID = function (id, callback) {
-        callback(this._actions.filter(function (a) { return a.id == id; }));
+        callback(this._actions.filter(function (a) { return a.aggregateID == id; }));
+    };
+    ActionStore.prototype.getAllActions = function () {
+        return this._actions;
     };
     return ActionStore;
 }());

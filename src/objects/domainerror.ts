@@ -6,5 +6,4 @@ export class DomainError extends Error{
         this.name = "DomainError";
         this.stack = (<any> new Error()).stack;
     }
-
 }

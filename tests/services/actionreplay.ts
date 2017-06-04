@@ -15,7 +15,7 @@ const TEST_ACTION_NAME = "testAction";
 class TestAction implements IAmAnAction{
     name = TEST_ACTION_NAME;
     created=Clock.now();
-    constructor(public id: string) {}
+    constructor(public aggregateID: string) {}
 }
 
 class TestCommand implements IAmACommand{

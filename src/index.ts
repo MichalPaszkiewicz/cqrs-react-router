@@ -12,3 +12,5 @@ export {DomainService} from "./services/domainservice";
 export {ActionStore} from "./services/actionstore";
 export {View} from "./objects/view";
 export {IAmACommandHandler} from "./interfaces/iamacommandhandler";
+export {CommandValidator} from "./objects/commandvalidator";
+export {StateReport} from "./objects/statereport";

@@ -6,6 +6,8 @@ import {DomainError} from "../objects/domainerror";
 import {DomainService} from "../services/domainservice";
 import {ActionStore} from "../services/actionstore";
 import {ClockDate} from "../helpers/clock";
+import {CommandValidator} from "../objects/commandvalidator";
+import {StateReport} from "../objects/statereport";
 
 class ViewSubscriber{
     constructor(public viewName: string, public callback: (view: View) => void){}
@@ -22,6 +24,8 @@ export class ApplicationService{
 
     private _commandHandlerTypes: {new(): IAmACommandHandler}[] = [];
     private _commandHandlers: IAmACommandHandler[] = [];
+    private _commandValidatorTypes: {new(): CommandValidator}[] = [];
+    private _commandValidators: CommandValidator[] = [];
     private _viewTypes: {new(): View}[] = [];
     private _views: View[] = [];
     private _viewSubscribers: ViewSubscriber[] = [];
@@ -74,6 +78,20 @@ export class ApplicationService{
     handleCommand(command: IAmACommand, callback?: (command: IAmACommand) => void){
         var self = this;
 
+        try{
+            self._commandValidators
+                .filter((cv) => cv.commandNames.some((cn) => cn == command.name))
+                .forEach((cv) => cv.validate(command));
+        }
+        catch(error){
+            if(error.isADomainError && self._domainErrorHandlers.length > 0){
+                self._domainErrorHandlers.forEach((deh) => {
+                    deh(error as DomainError);
+                }); 
+                return;
+            }
+        }
+
         var commandHandlersOfName = self._commandHandlers.filter((ch) => ch.commandNames.some((cn) => cn == command.name));
 
         if(commandHandlersOfName.length == 0){
@@ -115,6 +133,23 @@ export class ApplicationService{
         this._commandHandlers.push(new commandHandler());
     }
 
+    registerCommandValidator<T extends CommandValidator>(commandValidator: {new(): T}){
+        var self = this;
+        if(self._commandValidatorTypes.some((cv) => cv == commandValidator)){
+            throw new DomainError("This command validator has already been registered");
+        }
+        self._commandValidatorTypes.push(commandValidator);
+        var newCommandValidator = new commandValidator();
+        newCommandValidator.getViewByName = (name: string, viewCallBack: (view: View) => void) => {
+            self._views.forEach((v) => {
+                if(v.name == name){
+                    viewCallBack(v);
+                }
+            })
+        }
+        self._commandValidators.push(newCommandValidator);
+    }
+
     registerView<T extends View>(view: {new(): View}){
         this._viewTypes.push(view);
         var newView = new view();
@@ -146,6 +181,10 @@ export class ApplicationService{
         }
 
         return viewsOfName[0];
+    }
+
+    getStateReport(): StateReport{
+        return new StateReport(this._actionStore.getAllActions());
     }
 
     storeAction(action: IAmAnAction){
