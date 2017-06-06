@@ -31,4 +31,6 @@ var commandvalidator_1 = require("./objects/commandvalidator");
 exports.CommandValidator = commandvalidator_1.CommandValidator;
 var statereport_1 = require("./objects/statereport");
 exports.StateReport = statereport_1.StateReport;
+var datedaction_1 = require("./objects/datedaction");
+exports.DatedAction = datedaction_1.DatedAction;
 //# sourceMappingURL=index.js.map

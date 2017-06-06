@@ -14,3 +14,4 @@ export { View } from "./objects/view";
 export { IAmACommandHandler } from "./interfaces/iamacommandhandler";
 export { CommandValidator } from "./objects/commandvalidator";
 export { StateReport } from "./objects/statereport";
+export { DatedAction } from "./objects/datedaction";

@@ -147,6 +147,10 @@ testApplicationService.storeAction(new TestAction("123"));
 ```
 
 # latest changes #
+## 1.0.2 ##
+`DatedAction` now comes as part of the package - it is an abstract class that implements IAmAnAction. 
+It will automatically set the "Created" property on creation and therefore is more useful to users who want to use their actions for auditing purposes.
+
 ## 1.0.0 ##
 Breaking change: the use of 'id' in IAmAnAction was a bit ambiguous, so IAmAnAction now has a property 'aggregateID' instead.
 
