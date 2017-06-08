@@ -147,6 +147,9 @@ testApplicationService.storeAction(new TestAction("123"));
 ```
 
 # latest changes #
+## 1.0.4 ##
+Small fix to ClockDate object - adding of time now returns a new object and doesn't mutate the original ClockDate.
+
 ## 1.0.2 ##
 `DatedAction` now comes as part of the package - it is an abstract class that implements IAmAnAction. 
 It will automatically set the "Created" property on creation and therefore is more useful to users who want to use their actions for auditing purposes.

@@ -18,33 +18,23 @@ export class ClockDate{
     }
 
     addDays(days): ClockDate{
-        this.Date.setTime(this.getTime() + days * 24 * 60 * 60 * 1000)
-
-        return this;
+        return ClockDate.fromTicks(this.getTime() + days * 24 * 60 * 60 * 1000);
     }
 
     addHours(hours: number): ClockDate{
-        this.Date.setTime(this.getTime() + hours * 60 * 60 *1000)
-
-        return this;
+        return ClockDate.fromTicks(this.getTime() + hours * 60 * 60 *1000)
     }
 
     addMinutes(minutes: number): ClockDate{
-        this.Date.setTime(this.getTime() + minutes * 60 * 1000);
-
-        return this;
+        return ClockDate.fromTicks(this.getTime() + minutes * 60 * 1000);
     }
 
     addSeconds(seconds: number): ClockDate{
-        this.Date.setTime(this.getTime() + seconds * 1000);
-
-        return this;
+        return ClockDate.fromTicks(this.getTime() + seconds * 1000);
     }
 
     addMilliSeconds(milliseconds: number): ClockDate{
-        this.Date.setTime(this.getTime() + milliseconds);
-
-        return this;
+        return ClockDate.fromTicks(this.getTime() + milliseconds);
     }
 
     constructor(year: number, month: number, day: number, hour: number = 0, minutes: number = 0, seconds: number = 0, milliseconds: number = 0){
