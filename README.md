@@ -147,6 +147,9 @@ testApplicationService.storeAction(new TestAction("123"));
 ```
 
 # latest changes #
+## 1.0.5 ##
+Introduction of `AuditedAction` abstract class that will enforce use of createdBy string property.
+
 ## 1.0.4 ##
 Small fix to ClockDate object - adding of time now returns a new object and doesn't mutate the original ClockDate.
 

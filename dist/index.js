@@ -33,4 +33,6 @@ var statereport_1 = require("./objects/statereport");
 exports.StateReport = statereport_1.StateReport;
 var datedaction_1 = require("./objects/datedaction");
 exports.DatedAction = datedaction_1.DatedAction;
+var auditedaction_1 = require("./objects/auditedaction");
+exports.AuditedAction = auditedaction_1.AuditedAction;
 //# sourceMappingURL=index.js.map
