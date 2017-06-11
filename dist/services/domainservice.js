@@ -27,6 +27,9 @@ var DomainService = (function () {
             ar.applyAction(action);
         });
     };
+    DomainService.prototype.clearAggregateRoots = function () {
+        this._aggregateRoots = [];
+    };
     return DomainService;
 }());
 exports.DomainService = DomainService;

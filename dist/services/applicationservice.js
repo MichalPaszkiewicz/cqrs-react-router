@@ -64,6 +64,10 @@ var ApplicationService = (function () {
         this.reset();
         this._actionStore.replayActions(finalTime);
     };
+    ApplicationService.prototype.hardReplayActions = function (finalTime) {
+        this.reset();
+        this._domainService.clearAggregateRoots();
+    };
     ApplicationService.prototype.onDomainError = function (callback) {
         this._domainErrorHandlers.push(callback);
     };

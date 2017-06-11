@@ -147,6 +147,9 @@ testApplicationService.storeAction(new TestAction("123"));
 ```
 
 # latest changes #
+## 1.0.6 ##
+`hardReplayActions` in ApplicationService that will allow you to also reset aggregate roots (`replayActions` only resets views).
+
 ## 1.0.5 ##
 Introduction of `AuditedAction` abstract class that will enforce use of createdBy string property.
 

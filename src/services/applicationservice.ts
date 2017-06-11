@@ -71,6 +71,11 @@ export class ApplicationService{
         this._actionStore.replayActions(finalTime);
     }
 
+    hardReplayActions(finalTime?: ClockDate){
+        this.reset();
+        this._domainService.clearAggregateRoots();
+    }
+
     onDomainError(callback: (error: DomainError) => void){
         this._domainErrorHandlers.push(callback);
     }

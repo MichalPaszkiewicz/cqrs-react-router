@@ -37,4 +37,8 @@ export class DomainService{
             ar.applyAction(action);
         })
     }
+
+    clearAggregateRoots(){
+        this._aggregateRoots = [];
+    }
 }

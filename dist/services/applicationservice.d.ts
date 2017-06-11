@@ -23,6 +23,7 @@ export declare class ApplicationService {
     constructor();
     reset(): void;
     replayActions(finalTime?: ClockDate): void;
+    hardReplayActions(finalTime?: ClockDate): void;
     onDomainError(callback: (error: DomainError) => void): void;
     handleCommand(command: IAmACommand, callback?: (command: IAmACommand) => void): void;
     registerCommandHandler<T extends IAmACommandHandler>(commandHandler: {

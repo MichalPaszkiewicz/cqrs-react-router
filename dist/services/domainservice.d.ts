@@ -9,4 +9,5 @@ export declare class DomainService {
         new (id?: string): T;
     }, callback: (aggregateRoot: T) => void, id?: string): void;
     applyActionToAllAggregates(action: IAmAnAction): void;
+    clearAggregateRoots(): void;
 }
