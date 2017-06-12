@@ -147,6 +147,14 @@ testApplicationService.storeAction(new TestAction("123"));
 ```
 
 # latest changes #
+## 1.1.0 ##
+`onActionStored` can now be called on an ApplicationService instance.
+```javascript
+ApplicationService.Instance.onActionStored(callback: (action: IAmAnAction) => {
+    // do something with this action
+})
+```
+
 ## 1.0.6 ##
 `hardReplayActions` in ApplicationService that will allow you to also reset aggregate roots (`replayActions` only resets views).
 

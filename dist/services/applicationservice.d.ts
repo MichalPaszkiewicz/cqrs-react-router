@@ -19,12 +19,14 @@ export declare class ApplicationService {
     private _actionStore;
     private _domainService;
     private _domainErrorHandlers;
+    private _onActionStoredHandlers;
     clear(): void;
     constructor();
     reset(): void;
     replayActions(finalTime?: ClockDate): void;
     hardReplayActions(finalTime?: ClockDate): void;
     onDomainError(callback: (error: DomainError) => void): void;
+    onActionStored(callback: (action: IAmAnAction) => void): void;
     handleCommand(command: IAmACommand, callback?: (command: IAmACommand) => void): void;
     registerCommandHandler<T extends IAmACommandHandler>(commandHandler: {
         new (id?: string): T;

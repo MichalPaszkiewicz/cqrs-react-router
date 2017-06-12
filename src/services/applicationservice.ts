@@ -32,6 +32,7 @@ export class ApplicationService{
     private _actionStore: ActionStore = new ActionStore();    
     private _domainService: DomainService = new DomainService(this._actionStore);
     private _domainErrorHandlers: ((error: DomainError) => void)[] = [];
+    private _onActionStoredHandlers: ((action: IAmAnAction) => void)[] = [];
 
     clear(){
         this._commandHandlerTypes = [];
@@ -42,6 +43,7 @@ export class ApplicationService{
         this._actionStore = new ActionStore();
         this._domainService = new DomainService(this._actionStore);
         this._domainErrorHandlers = [];
+        this._onActionStoredHandlers = [];
     }
 
     constructor() {
@@ -78,6 +80,10 @@ export class ApplicationService{
 
     onDomainError(callback: (error: DomainError) => void){
         this._domainErrorHandlers.push(callback);
+    }
+
+    onActionStored(callback: (action: IAmAnAction) => void){
+        this._onActionStoredHandlers.push(callback);
     }
 
     handleCommand(command: IAmACommand, callback?: (command: IAmACommand) => void){
@@ -195,5 +201,8 @@ export class ApplicationService{
     storeAction(action: IAmAnAction){
         this._domainService.applyActionToAllAggregates(action);
         this._actionStore.storeAction(action);
+        this._onActionStoredHandlers.forEach((callback) => {
+            callback(action);
+        });
     }
 }

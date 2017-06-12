@@ -22,6 +22,7 @@ var ApplicationService = (function () {
         this._actionStore = new actionstore_1.ActionStore();
         this._domainService = new domainservice_1.DomainService(this._actionStore);
         this._domainErrorHandlers = [];
+        this._onActionStoredHandlers = [];
         var self = this;
         self._actionStore.onActionStored(function (action) {
             self._views.forEach(function (view) {
@@ -52,6 +53,7 @@ var ApplicationService = (function () {
         this._actionStore = new actionstore_1.ActionStore();
         this._domainService = new domainservice_1.DomainService(this._actionStore);
         this._domainErrorHandlers = [];
+        this._onActionStoredHandlers = [];
     };
     ApplicationService.prototype.reset = function () {
         var self = this;
@@ -70,6 +72,9 @@ var ApplicationService = (function () {
     };
     ApplicationService.prototype.onDomainError = function (callback) {
         this._domainErrorHandlers.push(callback);
+    };
+    ApplicationService.prototype.onActionStored = function (callback) {
+        this._onActionStoredHandlers.push(callback);
     };
     ApplicationService.prototype.handleCommand = function (command, callback) {
         var self = this;
@@ -167,6 +172,9 @@ var ApplicationService = (function () {
     ApplicationService.prototype.storeAction = function (action) {
         this._domainService.applyActionToAllAggregates(action);
         this._actionStore.storeAction(action);
+        this._onActionStoredHandlers.forEach(function (callback) {
+            callback(action);
+        });
     };
     return ApplicationService;
 }());
