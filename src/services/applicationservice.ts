@@ -16,6 +16,13 @@ class ViewSubscriber{
 export class ApplicationService{
     private static _instance: ApplicationService;
     static get Instance(): ApplicationService{
+        if(window){
+            var appPublicString = "_cqrs_ApplicationService";
+            if(!window[appPublicString]){
+                window[appPublicString] = new ApplicationService();
+            }
+            return window[appPublicString];
+        }
         if(ApplicationService._instance == null){
             ApplicationService._instance = new ApplicationService();
         }
