@@ -75,14 +75,14 @@ export class ApplicationService{
         });
     }
 
-    replayEvents(finalTime?: ClockDate){
+    replayEvents(finalTime?: ClockDate, millisecondsInterval?: number){
         this.reset();
-        this._eventStore.replayEvents(finalTime);
+        this._eventStore.replayEvents(finalTime, millisecondsInterval);
     }
 
-    hardReplayEvents(finalTime?: ClockDate){
-        this.reset();
+    hardReplayEvents(finalTime?: ClockDate, millisecondsInterval?: number){
         this._domainService.clearAggregateRoots();
+        this.replayEvents(finalTime, millisecondsInterval);
     }
 
     onDomainError(callback: (error: DomainError) => void){

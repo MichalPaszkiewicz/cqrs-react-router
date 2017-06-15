@@ -69,13 +69,13 @@ var ApplicationService = (function () {
             self._views.push(new viewType());
         });
     };
-    ApplicationService.prototype.replayEvents = function (finalTime) {
+    ApplicationService.prototype.replayEvents = function (finalTime, millisecondsInterval) {
         this.reset();
-        this._eventStore.replayEvents(finalTime);
+        this._eventStore.replayEvents(finalTime, millisecondsInterval);
     };
-    ApplicationService.prototype.hardReplayEvents = function (finalTime) {
-        this.reset();
+    ApplicationService.prototype.hardReplayEvents = function (finalTime, millisecondsInterval) {
         this._domainService.clearAggregateRoots();
+        this.replayEvents(finalTime, millisecondsInterval);
     };
     ApplicationService.prototype.onDomainError = function (callback) {
         this._domainErrorHandlers.push(callback);

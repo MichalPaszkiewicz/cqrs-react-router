@@ -10,17 +10,28 @@ var EventStore = (function () {
             callback(event);
         });
     };
-    EventStore.prototype.replayEvents = function (finalTime) {
+    EventStore.prototype.replayEvents = function (finalTime, millisecondsInterval) {
         var self = this;
-        self._events.filter(function (event) {
+        var eventsToReplay = self._events.filter(function (event) {
             return finalTime == null
                 || event.created == null
                 || event.created.isBefore(finalTime);
-        }).forEach(function (event) {
-            self._onEventStoredEvents.forEach(function (callback) {
-                callback(event);
-            });
         });
+        function replayEvent(index) {
+            self._onEventStoredEvents.forEach(function (callback) {
+                callback(eventsToReplay[index]);
+            });
+            if (index + 1 == eventsToReplay.length) {
+                return;
+            }
+            if (millisecondsInterval) {
+                setTimeout(function () { return replayEvent(index + 1); }, millisecondsInterval);
+            }
+            else {
+                replayEvent(index + 1);
+            }
+        }
+        replayEvent(0);
     };
     EventStore.prototype.onEventStored = function (callback) {
         this._onEventStoredEvents.push(callback);

@@ -23,8 +23,8 @@ export declare class ApplicationService {
     clear(): void;
     constructor();
     reset(): void;
-    replayEvents(finalTime?: ClockDate): void;
-    hardReplayEvents(finalTime?: ClockDate): void;
+    replayEvents(finalTime?: ClockDate, millisecondsInterval?: number): void;
+    hardReplayEvents(finalTime?: ClockDate, millisecondsInterval?: number): void;
     onDomainError(callback: (error: DomainError) => void): void;
     onActionStored(callback: (event: IAmADomainEvent) => void): void;
     handleCommand(command: IAmACommand, callback?: (command: IAmACommand) => void): void;

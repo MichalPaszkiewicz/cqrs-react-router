@@ -35,10 +35,10 @@ class SomeView extends View{
 
     stuff = 0;
 
-    handle(action: IAmAnAction){
+    handle(event: IAmADomainEvent){
         var self = this;
-        switch(action.name){
-            case "SomeAction":
+        switch(event.name){
+            case "SomeEvent":
                 self.stuff++;
                 return;
         }
@@ -50,8 +50,8 @@ export class SomeAggregateRoot extends AggregateRoot{
         //do something
     }
 
-    applyAction(action){
-        switch(action.Name){
+    applyEvent(event){
+        switch(event.Name){
             //when action applied, do something here
             default:
                 return;
@@ -140,22 +140,34 @@ export class App extends React.Component<AppProps, AppState>{
 
 ## replay actions! ##
 ```javascript
-testApplicationService.replayActions();
+testApplicationService.replayEvents();
 ```
 
 
 ## apply actions from external sources ##
 ```javascript
-testApplicationService.storeAction(new TestAction("123"));
+testApplicationService.storeEvent(new TestEvent("123"));
 ```
 
 # latest changes #
+## 2.0.1 ##
+Events can now be replayed slowly by calling replayEvents with two arguments:
+
+```javascript
+ApplicationService.Instance.replayEvents(Clock.now(), 1000);
+```
+
 ## 2.0.0 ##
 Breaking changes: 
+
 `IAmAnAction` renamed to `IAmADomainEvent`
+
 `ActionStore` renamed to `EventStore`
+
 `DatedAction` renamed to `DatedEvent`
+
 `AuditedAction` renamed to `AuditedEvent`
+
 All other functions and properties with "action" in them have been renamed with "event"
 
 This is due to the fact that "actions" are usually associated with commands, whereas in this project, they clearly correspond to events.

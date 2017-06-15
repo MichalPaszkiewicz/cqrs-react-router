@@ -13,17 +13,33 @@ export class EventStore{
         })
     }
 
-    replayEvents(finalTime?: ClockDate){
+    replayEvents(finalTime?: ClockDate, millisecondsInterval?: number){
         var self = this;
-        self._events.filter((event) => {
+        var eventsToReplay = self._events.filter((event) => {
             return finalTime == null 
                 || event.created == null   
                 || event.created.isBefore(finalTime);
-        }).forEach((event) => {
+        })
+        
+        function replayEvent(index){
+
             self._onEventStoredEvents.forEach((callback) => {
-                callback(event);
-            });
-        }); 
+                callback(eventsToReplay[index])
+            })
+
+            if(index + 1 == eventsToReplay.length){
+                return;
+            }
+
+            if(millisecondsInterval){
+                setTimeout(() => replayEvent(index + 1), millisecondsInterval);
+            }
+            else{
+                replayEvent(index + 1);
+            }
+        }
+
+        replayEvent(0);
     }
 
     onEventStored(callback: (event: IAmADomainEvent) => void){
