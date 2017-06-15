@@ -1,10 +1,10 @@
-import {ActionStore} from "../../src/services/actionstore";
+import {EventStore} from "../../src/services/eventstore";
 import {DomainService} from "../../src/services/domainservice";
 import {AggregateRoot} from "../../src/objects/aggregateroot";
 import {ApplicationService} from "../../src/services/applicationservice";
 import {IAmACommandHandler} from "../../src/interfaces/iamacommandhandler";
 import {IAmACommand} from "../../src/interfaces/iamacommand";
-import {IAmAnAction} from "../../src/interfaces/iamanaction";
+import {IAmADomainEvent} from "../../src/interfaces/iamadomainevent";
 import {View} from "../../src/objects/view";
 import {Clock} from "../../src/helpers/clock";
 import {DomainError} from "../../src/objects/domainerror";
@@ -14,7 +14,7 @@ const COMMAND_NAME: string = "testCommand";
 
 const TEST_ACTION_NAME = "testAction";
 
-class TestAction implements IAmAnAction{
+class TestAction implements IAmADomainEvent{
     name = TEST_ACTION_NAME;
     created=Clock.now();
     constructor(public aggregateID: string) {
@@ -23,12 +23,12 @@ class TestAction implements IAmAnAction{
 }
 
 class TestAggregateRoot extends AggregateRoot{
-    applyAction(action: IAmAnAction){
+    applyEvent(action: IAmADomainEvent){
 
     }
 
     doThatTestThing(){
-        this.storeAction(new TestAction("123"));
+        this.storeEvent(new TestAction("123"));
     }
 }
 
@@ -50,7 +50,7 @@ test("application service handles command", () => {
         }
     }
 
-    var testActionStore = new ActionStore();
+    var testActionStore = new EventStore();
     var testDomainService = new DomainService(testActionStore);
 
     var testApplicationService = new ApplicationService();
@@ -83,14 +83,14 @@ test("view update is triggered by command sent to application service", () => {
 
         data = [1,2,3]
 
-        handle(action: IAmAnAction){
+        handle(action: IAmADomainEvent){
             if(action.name == TEST_ACTION_NAME){
                 viewUpdateTriggers++;
             }
         }
     }
 
-    var testActionStore = new ActionStore();
+    var testActionStore = new EventStore();
     var testDomainService = new DomainService(testActionStore);
     var testApplicationService = new ApplicationService();
 
@@ -113,7 +113,7 @@ test("second command is handling aggregate root logic", () => {
 
     ApplicationService.Instance.clear();
 
-    class TestAction implements IAmAnAction{
+    class TestAction implements IAmADomainEvent{
         name="singleAction";
         aggregateID="testAggregate";
         created=Clock.now();
@@ -129,7 +129,7 @@ test("second command is handling aggregate root logic", () => {
 
         actionCount=0;
 
-        applyAction(action){
+        applyEvent(action){
             this.actionCount++;
         }
 
@@ -138,7 +138,7 @@ test("second command is handling aggregate root logic", () => {
                 handledSecondCommand = true;
                 return;
             }
-            this.storeAction(new TestAction());
+            this.storeEvent(new TestAction());
         }
 
     }
@@ -152,7 +152,7 @@ test("second command is handling aggregate root logic", () => {
         }
     }
 
-    var testActionStore = new ActionStore();
+    var testActionStore = new EventStore();
     var testDomainService = new DomainService(testActionStore);
     var testApplicationService = new ApplicationService();
 
@@ -173,7 +173,7 @@ test("external action updates existing aggregate root", () => {
 
     class ExtendedTestAggregateRoot extends TestAggregateRoot{
 
-        applyAction(action: IAmAnAction){
+        applyEvent(action: IAmADomainEvent){
             actionsApplied++;
         }
 
@@ -188,7 +188,7 @@ test("external action updates existing aggregate root", () => {
         }
     }
 
-    var testActionStore = new ActionStore();
+    var testActionStore = new EventStore();
     var testDomainService = new DomainService(testActionStore);
     var testApplicationService = new ApplicationService();
 
@@ -209,7 +209,7 @@ test("external action replayed when new aggregate root called for", () => {
 
     class ExtendedTestAggregateRoot extends TestAggregateRoot{
 
-        applyAction(action: IAmAnAction){
+        applyEvent(action: IAmADomainEvent){
             actionsApplied++;
         }
 
@@ -224,7 +224,7 @@ test("external action replayed when new aggregate root called for", () => {
         }
     }
 
-    var testActionStore = new ActionStore();
+    var testActionStore = new EventStore();
     var testDomainService = new DomainService(testActionStore);
     var testApplicationService = new ApplicationService();
 
@@ -244,7 +244,7 @@ test("application service can allow handling of domain errors", () => {
 
     class ExtendedTestAggregateRoot extends TestAggregateRoot{
 
-        applyAction(action: IAmAnAction){
+        applyAction(action: IAmADomainEvent){
             actionsApplied++;
         }
 
@@ -282,7 +282,7 @@ test("application service throws error on command handle if no handler specified
 
     class ExtendedTestAggregateRoot extends TestAggregateRoot{
 
-        applyAction(action: IAmAnAction){
+        applyAction(action: IAmADomainEvent){
             actionsApplied++;
         }
 
@@ -363,7 +363,7 @@ test("application service gets views for registered command validator during val
 
         testProperty: 42;
 
-        handle(action: IAmAnAction){
+        handle(action: IAmADomainEvent){
 
         }
     }

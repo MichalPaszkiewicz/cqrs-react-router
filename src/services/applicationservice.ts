@@ -1,10 +1,10 @@
 import {IAmACommand} from "../interfaces/iamacommand";
-import {IAmAnAction} from "../interfaces/iamanaction";
+import {IAmADomainEvent} from "../interfaces/iamadomainevent";
 import {IAmACommandHandler} from "../interfaces/iamacommandhandler";
 import {View} from "../objects/view";
 import {DomainError} from "../objects/domainerror";
 import {DomainService} from "../services/domainservice";
-import {ActionStore} from "../services/actionstore";
+import {EventStore} from "../services/eventstore";
 import {ClockDate} from "../helpers/clock";
 import {CommandValidator} from "../objects/commandvalidator";
 import {StateReport} from "../objects/statereport";
@@ -36,10 +36,10 @@ export class ApplicationService{
     private _viewTypes: {new(): View}[] = [];
     private _views: View[] = [];
     private _viewSubscribers: ViewSubscriber[] = [];
-    private _actionStore: ActionStore = new ActionStore();    
-    private _domainService: DomainService = new DomainService(this._actionStore);
+    private _eventStore: EventStore = new EventStore();    
+    private _domainService: DomainService = new DomainService(this._eventStore);
     private _domainErrorHandlers: ((error: DomainError) => void)[] = [];
-    private _onActionStoredHandlers: ((action: IAmAnAction) => void)[] = [];
+    private _onEventStoredHandlers: ((action: IAmADomainEvent) => void)[] = [];
 
     clear(){
         this._commandHandlerTypes = [];
@@ -47,15 +47,15 @@ export class ApplicationService{
         this._viewTypes = [];
         this._views = [];
         this._viewSubscribers = [];
-        this._actionStore = new ActionStore();
-        this._domainService = new DomainService(this._actionStore);
+        this._eventStore = new EventStore();
+        this._domainService = new DomainService(this._eventStore);
         this._domainErrorHandlers = [];
-        this._onActionStoredHandlers = [];
+        this._onEventStoredHandlers = [];
     }
 
     constructor() {
         var self = this;
-        self._actionStore.onActionStored((action) => {
+        self._eventStore.onEventStored((action) => {
             self._views.forEach((view: View) => {
                 view.handle(action);
                 self._viewSubscribers.filter((vs) => vs.viewName == view.name).forEach((vs) => {
@@ -75,12 +75,12 @@ export class ApplicationService{
         });
     }
 
-    replayActions(finalTime?: ClockDate){
+    replayEvents(finalTime?: ClockDate){
         this.reset();
-        this._actionStore.replayActions(finalTime);
+        this._eventStore.replayEvents(finalTime);
     }
 
-    hardReplayActions(finalTime?: ClockDate){
+    hardReplayEvents(finalTime?: ClockDate){
         this.reset();
         this._domainService.clearAggregateRoots();
     }
@@ -89,8 +89,8 @@ export class ApplicationService{
         this._domainErrorHandlers.push(callback);
     }
 
-    onActionStored(callback: (action: IAmAnAction) => void){
-        this._onActionStoredHandlers.push(callback);
+    onActionStored(callback: (event: IAmADomainEvent) => void){
+        this._onEventStoredHandlers.push(callback);
     }
 
     handleCommand(command: IAmACommand, callback?: (command: IAmACommand) => void){
@@ -202,14 +202,14 @@ export class ApplicationService{
     }
 
     getStateReport(): StateReport{
-        return new StateReport(this._actionStore.getAllActions());
+        return new StateReport(this._eventStore.getAllEvents());
     }
 
-    storeAction(action: IAmAnAction){
-        this._domainService.applyActionToAllAggregates(action);
-        this._actionStore.storeAction(action);
-        this._onActionStoredHandlers.forEach((callback) => {
-            callback(action);
+    storeAction(event: IAmADomainEvent){
+        this._domainService.applyEventToAllAggregates(event);
+        this._eventStore.storeEvent(event);
+        this._onEventStoredHandlers.forEach((callback) => {
+            callback(event);
         });
     }
 }

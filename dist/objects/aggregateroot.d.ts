@@ -1,10 +1,10 @@
-import { IAmAnAction } from "../interfaces/iamanaction";
-import { ActionStore } from "../services/actionstore";
+import { IAmADomainEvent } from "../interfaces/iamadomainevent";
+import { EventStore } from "../services/eventstore";
 export declare abstract class AggregateRoot {
     ID: string;
-    _actionStore: ActionStore;
+    _eventStore: EventStore;
     constructor(id?: string);
-    attachActionStore(actionStore: ActionStore): void;
-    storeAction(action: IAmAnAction): void;
-    abstract applyAction(action: IAmAnAction): any;
+    attachEventStore(eventStore: EventStore): void;
+    storeEvent(event: IAmADomainEvent): void;
+    abstract applyEvent(event: IAmADomainEvent): any;
 }

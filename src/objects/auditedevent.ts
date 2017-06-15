@@ -1,9 +1,10 @@
-import {IAmAnAction} from "../interfaces/iamanaction";
+import {DatedEvent} from "./datedevent";
 import {Clock, ClockDate} from "../helpers/clock";
 
-export abstract class DatedAction implements IAmAnAction{
+export abstract class AuditedEvent extends DatedEvent{
     abstract name: string;
     abstract aggregateID: string;
+    abstract createdBy: string;
 
     created: ClockDate = Clock.now();
 }

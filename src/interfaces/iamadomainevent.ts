@@ -1,6 +1,6 @@
 import {Clock, ClockDate} from "../helpers/clock";
 
-export interface IAmAnAction{
+export interface IAmADomainEvent{
 
     name: string;
     aggregateID: string;

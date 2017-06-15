@@ -4,12 +4,12 @@ var AggregateRoot = (function () {
     function AggregateRoot(id) {
         this.ID = id || guid_1.Guid.newGuid();
     }
-    AggregateRoot.prototype.attachActionStore = function (actionStore) {
-        this._actionStore = actionStore;
+    AggregateRoot.prototype.attachEventStore = function (eventStore) {
+        this._eventStore = eventStore;
     };
-    AggregateRoot.prototype.storeAction = function (action) {
-        this.applyAction(action);
-        this._actionStore.storeAction(action);
+    AggregateRoot.prototype.storeEvent = function (event) {
+        this.applyEvent(event);
+        this._eventStore.storeEvent(event);
     };
     return AggregateRoot;
 }());

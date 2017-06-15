@@ -1,5 +1,5 @@
 import { IAmACommand } from "../interfaces/iamacommand";
-import { IAmAnAction } from "../interfaces/iamanaction";
+import { IAmADomainEvent } from "../interfaces/iamadomainevent";
 import { IAmACommandHandler } from "../interfaces/iamacommandhandler";
 import { View } from "../objects/view";
 import { DomainError } from "../objects/domainerror";
@@ -16,17 +16,17 @@ export declare class ApplicationService {
     private _viewTypes;
     private _views;
     private _viewSubscribers;
-    private _actionStore;
+    private _eventStore;
     private _domainService;
     private _domainErrorHandlers;
-    private _onActionStoredHandlers;
+    private _onEventStoredHandlers;
     clear(): void;
     constructor();
     reset(): void;
-    replayActions(finalTime?: ClockDate): void;
-    hardReplayActions(finalTime?: ClockDate): void;
+    replayEvents(finalTime?: ClockDate): void;
+    hardReplayEvents(finalTime?: ClockDate): void;
     onDomainError(callback: (error: DomainError) => void): void;
-    onActionStored(callback: (action: IAmAnAction) => void): void;
+    onActionStored(callback: (event: IAmADomainEvent) => void): void;
     handleCommand(command: IAmACommand, callback?: (command: IAmACommand) => void): void;
     registerCommandHandler<T extends IAmACommandHandler>(commandHandler: {
         new (id?: string): T;
@@ -41,5 +41,5 @@ export declare class ApplicationService {
     unsubscribe(callback: (view: View) => void): void;
     getView(name: string): View;
     getStateReport(): StateReport;
-    storeAction(action: IAmAnAction): void;
+    storeAction(event: IAmADomainEvent): void;
 }

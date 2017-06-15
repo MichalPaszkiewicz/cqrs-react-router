@@ -1,16 +1,16 @@
-import {ActionStore} from "../../src/services/actionstore";
+import {EventStore} from "../../src/services/eventstore";
 import {DomainService} from "../../src/services/domainservice";
 import {AggregateRoot} from "../../src/objects/aggregateroot";
 
 class TestAggregateRoot extends AggregateRoot{
-    applyAction(){
+    applyEvent(){
 
     }
 }
 
 test("domain service returns a new aggregate root", () => {
 
-    var testActionStore = new ActionStore();
+    var testActionStore = new EventStore();
     var testDomainService = new DomainService(testActionStore);
 
     testDomainService.getAggregateRoot(TestAggregateRoot, (ar => {
@@ -23,7 +23,7 @@ test("domain service returns a new aggregate root with the correct id", () => {
 
     var testID = "1234";
 
-    var testActionStore = new ActionStore();
+    var testActionStore = new EventStore();
     var testDomainService = new DomainService(testActionStore);
 
     testDomainService.getAggregateRoot(TestAggregateRoot, (ar => {
@@ -38,7 +38,7 @@ test("domain service calls callback", () => {
     
     var testID = "1234";
 
-    var testActionStore = new ActionStore();
+    var testActionStore = new EventStore();
     var testDomainService = new DomainService(testActionStore);
 
     testDomainService.getAggregateRoot(TestAggregateRoot, (ar => {

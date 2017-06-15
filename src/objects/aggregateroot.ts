@@ -1,24 +1,24 @@
 import { Guid } from "../helpers/guid"
-import { IAmAnAction } from "../interfaces/iamanaction";
-import { ActionStore } from "../services/actionstore";
+import { IAmADomainEvent } from "../interfaces/iamadomainevent";
+import { EventStore } from "../services/eventstore";
 
 export abstract class AggregateRoot{
 
     ID: string;
-    _actionStore: ActionStore;
+    _eventStore: EventStore;
 
     constructor(id?: string){
         this.ID = id || Guid.newGuid();
     }
 
-    attachActionStore(actionStore: ActionStore){
-        this._actionStore = actionStore;
+    attachEventStore(eventStore: EventStore){
+        this._eventStore = eventStore;
     }
 
-    storeAction(action: IAmAnAction){
-        this.applyAction(action);
-        this._actionStore.storeAction(action);
+    storeEvent(event: IAmADomainEvent){
+        this.applyEvent(event);
+        this._eventStore.storeEvent(event);
     }
 
-    abstract applyAction(action: IAmAnAction);
+    abstract applyEvent(event: IAmADomainEvent);
 }

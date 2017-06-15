@@ -1,19 +1,19 @@
-import {ActionStore} from "../../src/services/actionstore";
+import {EventStore} from "../../src/services/eventstore";
 import {DomainService} from "../../src/services/domainservice";
 import {AggregateRoot} from "../../src/objects/aggregateroot";
 import {ApplicationService} from "../../src/services/applicationservice";
 import {IAmACommandHandler} from "../../src/interfaces/iamacommandhandler";
 import {IAmACommand} from "../../src/interfaces/iamacommand";
-import {IAmAnAction} from "../../src/interfaces/iamanaction";
+import {IAmADomainEvent} from "../../src/interfaces/iamadomainevent";
 import {View} from "../../src/objects/view";
 import {Clock} from "../../src/helpers/clock";
 
 const COMMAND_NAME: string = "testCommand";
 
-const TEST_ACTION_NAME = "testAction";
+const TEST_EVENT_NAME = "testEvent";
 
-class TestAction implements IAmAnAction{
-    name = TEST_ACTION_NAME;
+class TestEvent implements IAmADomainEvent{
+    name = TEST_EVENT_NAME;
     created=Clock.now();
     constructor(public aggregateID: string) {}
 }
@@ -22,7 +22,7 @@ class TestCommand implements IAmACommand{
     name = COMMAND_NAME
 }
 
-test("action replay puts view in correct state", () => {
+test("event replay puts view in correct state", () => {
 
     ApplicationService.Instance.clear();
 
@@ -38,12 +38,12 @@ test("action replay puts view in correct state", () => {
     var aggregateActionsHandled = 0;
 
     class TestAggregateRoot extends AggregateRoot{
-        applyAction(action: IAmAnAction){
+        applyEvent(event: IAmADomainEvent){
             aggregateActionsHandled++;
         }
 
         doThatTestThing(){
-            this.storeAction(new TestAction("123"));
+            this.storeEvent(new TestEvent("123"));
         }
     }
 
@@ -59,16 +59,16 @@ test("action replay puts view in correct state", () => {
 
         actionsHandled = 0;
 
-        handle(action: IAmAnAction){
-            if(action.name == TEST_ACTION_NAME){
+        handle(event: IAmADomainEvent){
+            if(event.name == TEST_EVENT_NAME){
                 viewUpdateTriggers++;
                 this.actionsHandled++;
             }
         }
     }
 
-    var testActionStore = new ActionStore();
-    var testDomainService = new DomainService(testActionStore);
+    var testEventStore = new EventStore();
+    var testDomainService = new DomainService(testEventStore);
     var testApplicationService = new ApplicationService();
 
     testApplicationService.registerView(TestView)
@@ -83,7 +83,7 @@ test("action replay puts view in correct state", () => {
 
     testApplicationService.handleCommand(new TestCommand());
 
-    testApplicationService.replayActions(Clock.now().addMinutes(1));
+    testApplicationService.replayEvents(Clock.now().addMinutes(1));
 
     expect(viewUpdateTriggers).toBe(2);
 });
@@ -93,12 +93,12 @@ test("action replay replays all with null time", () => {
     var aggregateActionsHandled = 0;
 
     class TestAggregateRoot extends AggregateRoot{
-        applyAction(action: IAmAnAction){
+        applyEvent(event: IAmADomainEvent){
             aggregateActionsHandled++;
         }
 
         doThatTestThing(){
-            this.storeAction(new TestAction("123"));
+            this.storeEvent(new TestEvent("123"));
         }
     }
 
@@ -124,16 +124,16 @@ test("action replay replays all with null time", () => {
 
         actionsHandled = 0;
 
-        handle(action: IAmAnAction){
-            if(action.name == TEST_ACTION_NAME){
+        handle(event: IAmADomainEvent){
+            if(event.name == TEST_EVENT_NAME){
                 viewUpdateTriggers++;
                 this.actionsHandled++;
             }
         }
     }
 
-    var testActionStore = new ActionStore();
-    var testDomainService = new DomainService(testActionStore);
+    var testEventStore = new EventStore();
+    var testDomainService = new DomainService(testEventStore);
     var testApplicationService = new ApplicationService();
 
     testApplicationService.registerView(TestView)
@@ -149,7 +149,7 @@ test("action replay replays all with null time", () => {
 
     testApplicationService.handleCommand(new TestCommand());
 
-    testApplicationService.replayActions();
+    testApplicationService.replayEvents();
 
     expect(viewUpdateTriggers).toBe(2);
 });

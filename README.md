@@ -5,6 +5,9 @@ cqrs-react-router is a library that will help you easily set up a CQRS/event sou
 [![Build Status](https://travis-ci.org/MichalPaszkiewicz/cqrs-react-router.svg?branch=master)](https://travis-ci.org/MichalPaszkiewicz/cqrs-react-router)
 [![npm version](https://badge.fury.io/js/cqrs-react-router.svg)](https://badge.fury.io/js/cqrs-react-router)
 
+## breaking change ##
+v2.0.0 is a breaking change, so please make sure you go through your code and fix any reference issues.
+
 ## typescript support ##
 cqrs-react-router is written in typescript and therefore will always support typescript
 
@@ -147,6 +150,16 @@ testApplicationService.storeAction(new TestAction("123"));
 ```
 
 # latest changes #
+## 2.0.0 ##
+Breaking changes: 
+`IAmAnAction` renamed to `IAmADomainEvent`
+`ActionStore` renamed to `EventStore`
+`DatedAction` renamed to `DatedEvent`
+`AuditedAction` renamed to `AuditedEvent`
+All other functions and properties with "action" in them have been renamed with "event"
+
+This is due to the fact that "actions" are usually associated with commands, whereas in this project, they clearly correspond to events.
+
 ## 1.1.0 ##
 `onActionStored` can now be called on an ApplicationService instance.
 ```javascript

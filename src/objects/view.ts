@@ -1,8 +1,8 @@
-import {IAmAnAction} from "../interfaces/iamanaction";
+import {IAmADomainEvent} from "../interfaces/iamadomainevent";
 
 export abstract class View{
 
     abstract name: string;
 
-    abstract handle(action: IAmAnAction);
+    abstract handle(event: IAmADomainEvent);
 }

@@ -1,7 +1,7 @@
 "use strict";
 var domainerror_1 = require("../objects/domainerror");
 var domainservice_1 = require("../services/domainservice");
-var actionstore_1 = require("../services/actionstore");
+var eventstore_1 = require("../services/eventstore");
 var statereport_1 = require("../objects/statereport");
 var ViewSubscriber = (function () {
     function ViewSubscriber(viewName, callback) {
@@ -19,12 +19,12 @@ var ApplicationService = (function () {
         this._viewTypes = [];
         this._views = [];
         this._viewSubscribers = [];
-        this._actionStore = new actionstore_1.ActionStore();
-        this._domainService = new domainservice_1.DomainService(this._actionStore);
+        this._eventStore = new eventstore_1.EventStore();
+        this._domainService = new domainservice_1.DomainService(this._eventStore);
         this._domainErrorHandlers = [];
-        this._onActionStoredHandlers = [];
+        this._onEventStoredHandlers = [];
         var self = this;
-        self._actionStore.onActionStored(function (action) {
+        self._eventStore.onEventStored(function (action) {
             self._views.forEach(function (view) {
                 view.handle(action);
                 self._viewSubscribers.filter(function (vs) { return vs.viewName == view.name; }).forEach(function (vs) {
@@ -57,10 +57,10 @@ var ApplicationService = (function () {
         this._viewTypes = [];
         this._views = [];
         this._viewSubscribers = [];
-        this._actionStore = new actionstore_1.ActionStore();
-        this._domainService = new domainservice_1.DomainService(this._actionStore);
+        this._eventStore = new eventstore_1.EventStore();
+        this._domainService = new domainservice_1.DomainService(this._eventStore);
         this._domainErrorHandlers = [];
-        this._onActionStoredHandlers = [];
+        this._onEventStoredHandlers = [];
     };
     ApplicationService.prototype.reset = function () {
         var self = this;
@@ -69,11 +69,11 @@ var ApplicationService = (function () {
             self._views.push(new viewType());
         });
     };
-    ApplicationService.prototype.replayActions = function (finalTime) {
+    ApplicationService.prototype.replayEvents = function (finalTime) {
         this.reset();
-        this._actionStore.replayActions(finalTime);
+        this._eventStore.replayEvents(finalTime);
     };
-    ApplicationService.prototype.hardReplayActions = function (finalTime) {
+    ApplicationService.prototype.hardReplayEvents = function (finalTime) {
         this.reset();
         this._domainService.clearAggregateRoots();
     };
@@ -81,7 +81,7 @@ var ApplicationService = (function () {
         this._domainErrorHandlers.push(callback);
     };
     ApplicationService.prototype.onActionStored = function (callback) {
-        this._onActionStoredHandlers.push(callback);
+        this._onEventStoredHandlers.push(callback);
     };
     ApplicationService.prototype.handleCommand = function (command, callback) {
         var self = this;
@@ -174,13 +174,13 @@ var ApplicationService = (function () {
         return viewsOfName[0];
     };
     ApplicationService.prototype.getStateReport = function () {
-        return new statereport_1.StateReport(this._actionStore.getAllActions());
+        return new statereport_1.StateReport(this._eventStore.getAllEvents());
     };
-    ApplicationService.prototype.storeAction = function (action) {
-        this._domainService.applyActionToAllAggregates(action);
-        this._actionStore.storeAction(action);
-        this._onActionStoredHandlers.forEach(function (callback) {
-            callback(action);
+    ApplicationService.prototype.storeAction = function (event) {
+        this._domainService.applyEventToAllAggregates(event);
+        this._eventStore.storeEvent(event);
+        this._onEventStoredHandlers.forEach(function (callback) {
+            callback(event);
         });
     };
     return ApplicationService;

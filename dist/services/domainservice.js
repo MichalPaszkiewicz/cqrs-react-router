@@ -1,8 +1,8 @@
 "use strict";
 var DomainService = (function () {
-    function DomainService(actionStore) {
+    function DomainService(eventStore) {
         this._aggregateRoots = [];
-        this._actionStore = actionStore;
+        this._eventStore = eventStore;
     }
     DomainService.prototype.getAggregateRoot = function (c, callback, id) {
         var self = this;
@@ -11,10 +11,10 @@ var DomainService = (function () {
         });
         if (similarAggregateRoots.length == 0) {
             var newAggregateRoot = new c(id);
-            newAggregateRoot.attachActionStore(self._actionStore);
+            newAggregateRoot.attachEventStore(self._eventStore);
             // replay all actions for this Aggregate Root in the action store
-            self._actionStore.getActionsForID(id, function (actions) {
-                actions.forEach(function (action) { return newAggregateRoot.applyAction(action); });
+            self._eventStore.getEventsForID(id, function (actions) {
+                actions.forEach(function (action) { return newAggregateRoot.applyEvent(action); });
             });
             self._aggregateRoots.push(newAggregateRoot);
             callback(newAggregateRoot);
@@ -22,9 +22,9 @@ var DomainService = (function () {
         }
         callback(similarAggregateRoots[0]);
     };
-    DomainService.prototype.applyActionToAllAggregates = function (action) {
+    DomainService.prototype.applyEventToAllAggregates = function (event) {
         this._aggregateRoots.forEach(function (ar) {
-            ar.applyAction(action);
+            ar.applyEvent(event);
         });
     };
     DomainService.prototype.clearAggregateRoots = function () {

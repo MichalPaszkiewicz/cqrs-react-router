@@ -1,10 +1,10 @@
-import {ActionStore} from "../../src/services/actionstore";
+import {EventStore} from "../../src/services/eventstore";
 import {DomainService} from "../../src/services/domainservice";
 import {AggregateRoot} from "../../src/objects/aggregateroot";
 import {ApplicationService} from "../../src/services/applicationservice";
 import {IAmACommandHandler} from "../../src/interfaces/iamacommandhandler";
 import {IAmACommand} from "../../src/interfaces/iamacommand";
-import {IAmAnAction} from "../../src/interfaces/iamanaction";
+import {IAmADomainEvent} from "../../src/interfaces/iamadomainevent";
 import {View} from "../../src/objects/view";
 import {Clock} from "../../src/helpers/clock";
 
@@ -12,7 +12,7 @@ const COMMAND_NAME: string = "testCommand";
 const TEST_ACTION_NAME = "testAction";
 const TEST_VIEW_NAME = "testView";
 
-class TestAction implements IAmAnAction{
+class TestAction implements IAmADomainEvent{
     name = TEST_ACTION_NAME;
     created=Clock.now();
     constructor(public aggregateID: string) {
@@ -21,12 +21,12 @@ class TestAction implements IAmAnAction{
 }
 
 class TestAggregateRoot extends AggregateRoot{
-    applyAction(action: IAmAnAction){
+    applyEvent(action: IAmADomainEvent){
 
     }
 
     doThatTestThing(){
-        this.storeAction(new TestAction("123"));
+        this.storeEvent(new TestAction("123"));
     }
 }
 
@@ -37,7 +37,7 @@ class TestCommand implements IAmACommand{
 class TestView extends View{
     name = TEST_VIEW_NAME;
 
-    handle(action: IAmAnAction){
+    handle(action: IAmADomainEvent){
 
     }
 }

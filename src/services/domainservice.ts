@@ -1,14 +1,14 @@
 import {AggregateRoot} from "../objects/aggregateroot";
-import {ActionStore} from "../services/actionstore";
-import {IAmAnAction} from "../interfaces/iamanaction";
+import {EventStore} from "../services/eventstore";
+import {IAmADomainEvent} from "../interfaces/iamadomainevent";
 
 export class DomainService{
 
     private _aggregateRoots: AggregateRoot[] = [];
-    private _actionStore: ActionStore;
+    private _eventStore: EventStore;
 
-    constructor(actionStore: ActionStore){
-        this._actionStore = actionStore;
+    constructor(eventStore: EventStore){
+        this._eventStore = eventStore;
     }
 
     getAggregateRoot<T extends AggregateRoot>(c: {new(id?: string): T; }, callback: (aggregateRoot: T) => void, id?: string){
@@ -18,11 +18,11 @@ export class DomainService{
         });
         if(similarAggregateRoots.length == 0){
             var newAggregateRoot = new c(id);
-            newAggregateRoot.attachActionStore(self._actionStore);
+            newAggregateRoot.attachEventStore(self._eventStore);
             
             // replay all actions for this Aggregate Root in the action store
-            self._actionStore.getActionsForID(id, (actions) => {
-                actions.forEach((action) => newAggregateRoot.applyAction(action)); 
+            self._eventStore.getEventsForID(id, (actions) => {
+                actions.forEach((action) => newAggregateRoot.applyEvent(action)); 
             });
             
             self._aggregateRoots.push(newAggregateRoot);
@@ -32,9 +32,9 @@ export class DomainService{
         callback(<T>similarAggregateRoots[0]);
     }
 
-    applyActionToAllAggregates(action: IAmAnAction){
+    applyEventToAllAggregates(event: IAmADomainEvent){
         this._aggregateRoots.forEach((ar) => {
-            ar.applyAction(action);
+            ar.applyEvent(event);
         })
     }
 
