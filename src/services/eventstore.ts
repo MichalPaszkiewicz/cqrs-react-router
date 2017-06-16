@@ -44,6 +44,10 @@ export class EventStore{
 
     onEventStored(callback: (event: IAmADomainEvent) => void){
         this._onEventStoredEvents.push(callback);
+    }   
+
+    removeOnEventStoredEvent(callback: (event: IAmADomainEvent) => void){
+        this._onEventStoredEvents = this._onEventStoredEvents.filter((oese) => oese != callback);
     }
 
     clearOnEventStoredEvents(){

@@ -6,6 +6,7 @@ export declare class EventStore {
     storeEvent(event: IAmADomainEvent): void;
     replayEvents(finalTime?: ClockDate, millisecondsInterval?: number): void;
     onEventStored(callback: (event: IAmADomainEvent) => void): void;
+    removeOnEventStoredEvent(callback: (event: IAmADomainEvent) => void): void;
     clearOnEventStoredEvents(): void;
     getEventsForID(id: string, callback: (events: IAmADomainEvent[]) => void): void;
     getAllEvents(): IAmADomainEvent[];

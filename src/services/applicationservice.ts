@@ -143,6 +143,46 @@ export class ApplicationService{
         });
     }
 
+    validateHypotheticalCommand(command: IAmACommand, onError: (error: DomainError) => void, callback?: (command: IAmACommand) => void){
+        var self = this;
+        var tempEventStore = new EventStore();
+        var tempDomainService = new DomainService(tempEventStore);
+        var tempCommandValidators = self._commandValidatorTypes.map((cvt) => new cvt());
+        var tempCommandHandlers = self._commandHandlerTypes.map((cht) => new cht());
+
+        try{
+            tempCommandValidators
+                .filter((cv) => cv.commandNames.some((cn) => cn == command.name))
+                .forEach((cv) => cv.validate(command));
+
+            var commandHandlersOfName = tempCommandHandlers.filter((ch) => ch.commandNames.some((cn) => cn == command.name));
+
+            if(commandHandlersOfName.length == 0){
+                throw new DomainError(`no command handler registered for command of name "${command.name}"`);
+            }
+
+            var handlersCount = commandHandlersOfName.length;
+
+            commandHandlersOfName.forEach((ch) =>{
+                ch.handle(command, tempDomainService,  () => {
+                    handlersCount--;
+
+                    if(handlersCount == 0){
+                        if(callback){
+                            callback(command);
+                        }
+                    }                
+                });
+            });
+        }
+        catch(error){
+            if(error.isADomainError){
+                onError(error as DomainError);
+                return;
+            }
+        }
+    }
+
     registerCommandHandler<T extends IAmACommandHandler>(commandHandler: {new(id?: string): T}){
         if(this._commandHandlerTypes.some((cht) => cht == commandHandler)){
             throw new DomainError("A command handler of this type has already been added");        

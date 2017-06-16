@@ -36,6 +36,9 @@ var EventStore = (function () {
     EventStore.prototype.onEventStored = function (callback) {
         this._onEventStoredEvents.push(callback);
     };
+    EventStore.prototype.removeOnEventStoredEvent = function (callback) {
+        this._onEventStoredEvents = this._onEventStoredEvents.filter(function (oese) { return oese != callback; });
+    };
     EventStore.prototype.clearOnEventStoredEvents = function () {
         this._onEventStoredEvents = [];
     };

@@ -28,6 +28,7 @@ export declare class ApplicationService {
     onDomainError(callback: (error: DomainError) => void): void;
     onActionStored(callback: (event: IAmADomainEvent) => void): void;
     handleCommand(command: IAmACommand, callback?: (command: IAmACommand) => void): void;
+    validateHypotheticalCommand(command: IAmACommand, onError: (error: DomainError) => void, callback?: (command: IAmACommand) => void): void;
     registerCommandHandler<T extends IAmACommandHandler>(commandHandler: {
         new (id?: string): T;
     }): void;

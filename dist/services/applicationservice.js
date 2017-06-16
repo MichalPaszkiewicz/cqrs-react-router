@@ -126,6 +126,39 @@ var ApplicationService = (function () {
             }
         });
     };
+    ApplicationService.prototype.validateHypotheticalCommand = function (command, onError, callback) {
+        var self = this;
+        var tempEventStore = new eventstore_1.EventStore();
+        var tempDomainService = new domainservice_1.DomainService(tempEventStore);
+        var tempCommandValidators = self._commandValidatorTypes.map(function (cvt) { return new cvt(); });
+        var tempCommandHandlers = self._commandHandlerTypes.map(function (cht) { return new cht(); });
+        try {
+            tempCommandValidators
+                .filter(function (cv) { return cv.commandNames.some(function (cn) { return cn == command.name; }); })
+                .forEach(function (cv) { return cv.validate(command); });
+            var commandHandlersOfName = tempCommandHandlers.filter(function (ch) { return ch.commandNames.some(function (cn) { return cn == command.name; }); });
+            if (commandHandlersOfName.length == 0) {
+                throw new domainerror_1.DomainError("no command handler registered for command of name \"" + command.name + "\"");
+            }
+            var handlersCount = commandHandlersOfName.length;
+            commandHandlersOfName.forEach(function (ch) {
+                ch.handle(command, tempDomainService, function () {
+                    handlersCount--;
+                    if (handlersCount == 0) {
+                        if (callback) {
+                            callback(command);
+                        }
+                    }
+                });
+            });
+        }
+        catch (error) {
+            if (error.isADomainError) {
+                onError(error);
+                return;
+            }
+        }
+    };
     ApplicationService.prototype.registerCommandHandler = function (commandHandler) {
         if (this._commandHandlerTypes.some(function (cht) { return cht == commandHandler; })) {
             throw new domainerror_1.DomainError("A command handler of this type has already been added");

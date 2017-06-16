@@ -150,11 +150,15 @@ testApplicationService.storeEvent(new TestEvent("123"));
 ```
 
 # latest changes #
+
+## 2.0.2 ##
+`ApplicationService.Instance.validateHypotheticalCommand(command, onError)` now available for when you want to run all your business logic without changing the current state.
+
 ## 2.0.1 ##
 Events can now be replayed slowly by calling replayEvents with two arguments:
 
 ```javascript
-ApplicationService.Instance.replayEvents(Clock.now(), 1000);
+ApplicationService.Instance.replayEvents(Clock.now(), 1000); 
 ```
 
 ## 2.0.0 ##
