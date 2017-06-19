@@ -24,9 +24,9 @@ var ApplicationService = (function () {
         this._domainErrorHandlers = [];
         this._onEventStoredHandlers = [];
         var self = this;
-        self._eventStore.onEventStored(function (action) {
+        self._eventStore.onEventStored(function (event) {
             self._views.forEach(function (view) {
-                view.handle(action);
+                view.handle(event);
                 self._viewSubscribers.filter(function (vs) { return vs.viewName == view.name; }).forEach(function (vs) {
                     vs.callback(view);
                 });
@@ -75,12 +75,13 @@ var ApplicationService = (function () {
     };
     ApplicationService.prototype.hardReplayEvents = function (finalTime, millisecondsInterval) {
         this._domainService.clearAggregateRoots();
-        this.replayEvents(finalTime, millisecondsInterval);
+        this.reset();
+        this._eventStore.replayEvents(finalTime, millisecondsInterval, true);
     };
     ApplicationService.prototype.onDomainError = function (callback) {
         this._domainErrorHandlers.push(callback);
     };
-    ApplicationService.prototype.onActionStored = function (callback) {
+    ApplicationService.prototype.onEventStored = function (callback) {
         this._onEventStoredHandlers.push(callback);
     };
     ApplicationService.prototype.handleCommand = function (command, callback) {
@@ -214,7 +215,7 @@ var ApplicationService = (function () {
     ApplicationService.prototype.getStateReport = function () {
         return new statereport_1.StateReport(this._eventStore.getAllEvents());
     };
-    ApplicationService.prototype.storeAction = function (event) {
+    ApplicationService.prototype.storeEvent = function (event) {
         this._domainService.applyEventToAllAggregates(event);
         this._eventStore.storeEvent(event);
         this._onEventStoredHandlers.forEach(function (callback) {

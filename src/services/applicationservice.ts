@@ -40,7 +40,7 @@ export class ApplicationService{
     private _eventStore: EventStore = new EventStore();    
     private _domainService: DomainService = new DomainService(this._eventStore);
     private _domainErrorHandlers: ((error: DomainError) => void)[] = [];
-    private _onEventStoredHandlers: ((action: IAmADomainEvent) => void)[] = [];
+    private _onEventStoredHandlers: ((event: IAmADomainEvent) => void)[] = [];
 
     clear(){
         this._commandHandlerTypes = [];
@@ -56,9 +56,9 @@ export class ApplicationService{
 
     constructor() {
         var self = this;
-        self._eventStore.onEventStored((action) => {
+        self._eventStore.onEventStored((event) => {
             self._views.forEach((view: View) => {
-                view.handle(action);
+                view.handle(event);
                 self._viewSubscribers.filter((vs) => vs.viewName == view.name).forEach((vs) => {
                     vs.callback(view);
                 })
@@ -83,14 +83,15 @@ export class ApplicationService{
 
     hardReplayEvents(finalTime?: ClockDate, millisecondsInterval?: number){
         this._domainService.clearAggregateRoots();
-        this.replayEvents(finalTime, millisecondsInterval);
+        this.reset();
+        this._eventStore.replayEvents(finalTime, millisecondsInterval, true);
     }
 
     onDomainError(callback: (error: DomainError) => void){
         this._domainErrorHandlers.push(callback);
     }
 
-    onActionStored(callback: (event: IAmADomainEvent) => void){
+    onEventStored(callback: (event: IAmADomainEvent) => void){
         this._onEventStoredHandlers.push(callback);
     }
 
@@ -252,7 +253,7 @@ export class ApplicationService{
         return new StateReport(this._eventStore.getAllEvents());
     }
 
-    storeAction(event: IAmADomainEvent){
+    storeEvent(event: IAmADomainEvent){
         this._domainService.applyEventToAllAggregates(event);
         this._eventStore.storeEvent(event);
         this._onEventStoredHandlers.forEach((callback) => {

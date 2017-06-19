@@ -10,7 +10,8 @@ var EventStore = (function () {
             callback(event);
         });
     };
-    EventStore.prototype.replayEvents = function (finalTime, millisecondsInterval) {
+    EventStore.prototype.replayEvents = function (finalTime, millisecondsInterval, hardReplay) {
+        if (hardReplay === void 0) { hardReplay = false; }
         var self = this;
         var eventsToReplay = self._events.filter(function (event) {
             return finalTime == null
@@ -32,6 +33,9 @@ var EventStore = (function () {
             }
         }
         replayEvent(0);
+        if (hardReplay) {
+            self._events = eventsToReplay;
+        }
     };
     EventStore.prototype.onEventStored = function (callback) {
         this._onEventStoredEvents.push(callback);

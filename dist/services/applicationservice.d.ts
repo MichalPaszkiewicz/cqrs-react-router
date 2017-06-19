@@ -27,7 +27,7 @@ export declare class ApplicationService {
     replayEvents(finalTime?: ClockDate, millisecondsInterval?: number): void;
     hardReplayEvents(finalTime?: ClockDate, millisecondsInterval?: number): void;
     onDomainError(callback: (error: DomainError) => void): void;
-    onActionStored(callback: (event: IAmADomainEvent) => void): void;
+    onEventStored(callback: (event: IAmADomainEvent) => void): void;
     handleCommand(command: IAmACommand, callback?: (command: IAmACommand) => void): void;
     validateHypotheticalCommand(command: IAmACommand, onError: (error: DomainError) => void, callback?: (command: IAmACommand) => void): void;
     registerCommandHandler<T extends IAmACommandHandler>(commandHandler: {
@@ -44,5 +44,5 @@ export declare class ApplicationService {
     unsubscribe(callback: (view: View) => void): void;
     getView(name: string): View;
     getStateReport(): StateReport;
-    storeAction(event: IAmADomainEvent): void;
+    storeEvent(event: IAmADomainEvent): void;
 }

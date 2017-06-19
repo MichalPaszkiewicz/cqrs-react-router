@@ -11,12 +11,9 @@ v2.0.0 is a breaking change, so please make sure you go through your code and fi
 ## typescript support ##
 cqrs-react-router is written in typescript and therefore will always support typescript
 
-
-
 ## how to contribute ##
 feel free to submit pull requests, just please provide clear notes as to what your update will change.
 Pull requests that cause tests to fail will not be accepted.
-
 
 ## how to install ##
 you will need npm. Then install this library with
@@ -138,13 +135,13 @@ export class App extends React.Component<AppProps, AppState>{
 ```
 
 
-## replay actions! ##
+## replay events! ##
 ```javascript
 testApplicationService.replayEvents();
 ```
 
 
-## apply actions from external sources ##
+## apply events from external sources ##
 ```javascript
 testApplicationService.storeEvent(new TestEvent("123"));
 ```

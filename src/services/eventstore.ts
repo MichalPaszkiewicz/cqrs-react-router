@@ -13,7 +13,7 @@ export class EventStore{
         })
     }
 
-    replayEvents(finalTime?: ClockDate, millisecondsInterval?: number){
+    replayEvents(finalTime?: ClockDate, millisecondsInterval?: number, hardReplay: boolean = false){
         var self = this;
         var eventsToReplay = self._events.filter((event) => {
             return finalTime == null 
@@ -40,6 +40,10 @@ export class EventStore{
         }
 
         replayEvent(0);
+
+        if(hardReplay){
+            self._events = eventsToReplay;
+        }
     }
 
     onEventStored(callback: (event: IAmADomainEvent) => void){

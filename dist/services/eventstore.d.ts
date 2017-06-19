@@ -4,7 +4,7 @@ export declare class EventStore {
     private _events;
     private _onEventStoredEvents;
     storeEvent(event: IAmADomainEvent): void;
-    replayEvents(finalTime?: ClockDate, millisecondsInterval?: number): void;
+    replayEvents(finalTime?: ClockDate, millisecondsInterval?: number, hardReplay?: boolean): void;
     onEventStored(callback: (event: IAmADomainEvent) => void): void;
     removeOnEventStoredEvent(callback: (event: IAmADomainEvent) => void): void;
     clearOnEventStoredEvents(): void;

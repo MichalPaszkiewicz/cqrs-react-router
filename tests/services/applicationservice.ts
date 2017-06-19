@@ -196,7 +196,7 @@ test("external action updates existing aggregate root", () => {
 
     testApplicationService.handleCommand(new TestCommand());
 
-    testApplicationService.storeAction(new TestAction("123"));
+    testApplicationService.storeEvent(new TestAction("123"));
 
     expect(actionsApplied).toBe(2);
 });
@@ -230,7 +230,7 @@ test("external action replayed when new aggregate root called for", () => {
 
     testApplicationService.registerCommandHandler(TestCommandHandler);
 
-    testApplicationService.storeAction(new TestAction("123"));
+    testApplicationService.storeEvent(new TestAction("123"));
 
     testApplicationService.handleCommand(new TestCommand());
 
