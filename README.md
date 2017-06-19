@@ -151,6 +151,13 @@ testApplicationService.storeEvent(new TestEvent("123"));
 
 # latest changes #
 
+## 2.0.3 ##
+React components (and therefore also cqrs-react-router pages) require subscription on mounting and should unsubscribe when unmounted.
+
+`ApplicationService.Instance.subscribePage(page, viewName, callback)` is a new method that means you no longer have to worry about the mounting-unmounting process.
+
+Please be aware that you probably might want to still manually write the mounting/unmounting code if you have custom code you need run there.
+
 ## 2.0.2 ##
 `ApplicationService.Instance.validateHypotheticalCommand(command, onError)` now available for when you want to run all your business logic without changing the current state.
 

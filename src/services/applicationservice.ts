@@ -8,6 +8,7 @@ import {EventStore} from "../services/eventstore";
 import {ClockDate} from "../helpers/clock";
 import {CommandValidator} from "../objects/commandvalidator";
 import {StateReport} from "../objects/statereport";
+import {Page} from "../objects/page";
 
 class ViewSubscriber{
     constructor(public viewName: string, public callback: (view: View) => void){}
@@ -225,6 +226,12 @@ export class ApplicationService{
         this._views.filter((v) => v.name == viewName).forEach((v) => {
             callback(v);
         });
+    }
+
+    subscribePage(page: Page, viewName: string, callback:(view: View) => void){
+        var myApp = this;
+        page["componentDidMount"] = () => myApp.subscribe(viewName, callback);
+        page["componentWillUnmount"] = () => myApp.unsubscribe(callback);
     }
 
     unsubscribe(callback:(view: View) => void){

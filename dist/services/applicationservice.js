@@ -196,6 +196,11 @@ var ApplicationService = (function () {
             callback(v);
         });
     };
+    ApplicationService.prototype.subscribePage = function (page, viewName, callback) {
+        var myApp = this;
+        page["componentDidMount"] = function () { return myApp.subscribe(viewName, callback); };
+        page["componentWillUnmount"] = function () { return myApp.unsubscribe(callback); };
+    };
     ApplicationService.prototype.unsubscribe = function (callback) {
         this._viewSubscribers = this._viewSubscribers.filter(function (vs) { return vs.callback != callback; });
     };

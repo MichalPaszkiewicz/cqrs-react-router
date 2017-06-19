@@ -6,6 +6,7 @@ import { DomainError } from "../objects/domainerror";
 import { ClockDate } from "../helpers/clock";
 import { CommandValidator } from "../objects/commandvalidator";
 import { StateReport } from "../objects/statereport";
+import { Page } from "../objects/page";
 export declare class ApplicationService {
     private static _instance;
     static readonly Instance: ApplicationService;
@@ -39,6 +40,7 @@ export declare class ApplicationService {
         new (): View;
     }): void;
     subscribe(viewName: string, callback: (view: View) => void): void;
+    subscribePage(page: Page, viewName: string, callback: (view: View) => void): void;
     unsubscribe(callback: (view: View) => void): void;
     getView(name: string): View;
     getStateReport(): StateReport;
