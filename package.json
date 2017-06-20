@@ -2,7 +2,7 @@
     "name": "cqrs-react-router",
     "author": "Michal Paszkiewicz",
     "license": "MIT",
-    "version": "2.0.4",
+    "version": "2.0.5",
     "main": "./dist/index.js",
     "types": "./dist/index.d.ts",
     "scripts": {

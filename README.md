@@ -148,6 +148,9 @@ testApplicationService.storeEvent(new TestEvent("123"));
 
 # latest changes #
 
+## 2.0.5 ##
+Replay of navigations completed with `Link` components can now be replayed
+
 ## 2.0.3 ##
 React components (and therefore also cqrs-react-router pages) require subscription on mounting and should unsubscribe when unmounted.
 

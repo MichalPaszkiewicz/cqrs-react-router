@@ -2,6 +2,11 @@ import * as React from 'react';
 import {matchPath} from "../helpers/helpers";
 import {Page, PageProps, PageState} from "./page";
 import {ApplicationService} from "../services/applicationservice";
+import {View} from "./view";
+import {PAGE_NAVIGATED_EVENT_NAME, PageNavigatedEvent} from "./pagenavigated";
+import {IAmADomainEvent} from "../interfaces/iamadomainevent";
+import {PageNavigationCommandHandler} from "./pagenavigationcommandhandler";
+import {NavigateToPageCommand} from "./navigatetopage";
 
 export class RouteProps{
     path: string;
@@ -113,20 +118,40 @@ export class LinkProps{
 
 export class Link extends React.Component<LinkProps, null>{
     private _handleClick = (e) => {
-        const {to} = this.props
-        if(this.props.onClick){
-            this.props.onClick(e);
+        var self = this;
+        if(self.props.onClick){
+            self.props.onClick(e);
         }
         event.preventDefault()
-        historyPush(to);
+        if(self.props.to){
+            ApplicationService.Instance.handleCommand(new NavigateToPageCommand(self.props.to));
+        }
     }
     render(){
         const {to, children} = this.props;
 
         return (
-            <a className={this.props.className} href={to} onClick={(e) => this._handleClick(e)}>
+            <a className={this.props.className} onClick={(e) => this._handleClick(e)}>
                 {children}
             </a>
         )
     }
 }
+
+export class PageNavigationView extends View{
+    name = "Page navigation view";
+    
+    handle(event: IAmADomainEvent){
+        switch(event.name){
+            case PAGE_NAVIGATED_EVENT_NAME:
+                var pageNavigated = event as PageNavigatedEvent;
+                historyPush(pageNavigated.destination);
+                return;
+            default:
+                return;
+        }
+    }
+}
+
+ApplicationService.Instance.registerCommandHandler(PageNavigationCommandHandler);
+ApplicationService.Instance.registerView(PageNavigationView);

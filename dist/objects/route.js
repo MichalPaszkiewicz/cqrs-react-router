@@ -6,6 +6,11 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var React = require("react");
 var helpers_1 = require("../helpers/helpers");
+var applicationservice_1 = require("../services/applicationservice");
+var view_1 = require("./view");
+var pagenavigated_1 = require("./pagenavigated");
+var pagenavigationcommandhandler_1 = require("./pagenavigationcommandhandler");
+var navigatetopage_1 = require("./navigatetopage");
 var RouteProps = (function () {
     function RouteProps() {
     }
@@ -94,21 +99,45 @@ var Link = (function (_super) {
     function Link() {
         var _this = _super !== null && _super.apply(this, arguments) || this;
         _this._handleClick = function (e) {
-            var to = _this.props.to;
-            if (_this.props.onClick) {
-                _this.props.onClick(e);
+            var self = _this;
+            if (self.props.onClick) {
+                self.props.onClick(e);
             }
             event.preventDefault();
-            historyPush(to);
+            if (self.props.to) {
+                applicationservice_1.ApplicationService.Instance.handleCommand(new navigatetopage_1.NavigateToPageCommand(self.props.to));
+            }
         };
         return _this;
     }
     Link.prototype.render = function () {
         var _this = this;
         var _a = this.props, to = _a.to, children = _a.children;
-        return (React.createElement("a", { className: this.props.className, href: to, onClick: function (e) { return _this._handleClick(e); } }, children));
+        return (React.createElement("a", { className: this.props.className, onClick: function (e) { return _this._handleClick(e); } }, children));
     };
     return Link;
 }(React.Component));
 exports.Link = Link;
+var PageNavigationView = (function (_super) {
+    __extends(PageNavigationView, _super);
+    function PageNavigationView() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.name = "Page navigation view";
+        return _this;
+    }
+    PageNavigationView.prototype.handle = function (event) {
+        switch (event.name) {
+            case pagenavigated_1.PAGE_NAVIGATED_EVENT_NAME:
+                var pageNavigated = event;
+                historyPush(pageNavigated.destination);
+                return;
+            default:
+                return;
+        }
+    };
+    return PageNavigationView;
+}(view_1.View));
+exports.PageNavigationView = PageNavigationView;
+applicationservice_1.ApplicationService.Instance.registerCommandHandler(pagenavigationcommandhandler_1.PageNavigationCommandHandler);
+applicationservice_1.ApplicationService.Instance.registerView(PageNavigationView);
 //# sourceMappingURL=route.js.map
