@@ -28,6 +28,7 @@ export declare class ApplicationService {
     hardReplayEvents(finalTime?: ClockDate, millisecondsInterval?: number): void;
     onDomainError(callback: (error: DomainError) => void): void;
     onEventStored(callback: (event: IAmADomainEvent) => void): void;
+    static handleCommand(command: IAmACommand, callback?: (command: IAmACommand) => void): void;
     handleCommand(command: IAmACommand, callback?: (command: IAmACommand) => void): void;
     validateHypotheticalCommand(command: IAmACommand, onError: (error: DomainError) => void, callback?: (command: IAmACommand) => void): void;
     registerCommandHandler<T extends IAmACommandHandler>(commandHandler: {

@@ -95,6 +95,10 @@ export class ApplicationService{
         this._onEventStoredHandlers.push(callback);
     }
 
+    static handleCommand(command: IAmACommand, callback?: (command: IAmACommand) => void){
+        ApplicationService.Instance.handleCommand(command, callback);
+    }
+
     handleCommand(command: IAmACommand, callback?: (command: IAmACommand) => void){
         var self = this;
 

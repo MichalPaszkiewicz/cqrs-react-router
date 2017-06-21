@@ -131,7 +131,7 @@ export class Link extends React.Component<LinkProps, null>{
         const {to, children} = this.props;
 
         return (
-            <a className={this.props.className} onClick={(e) => this._handleClick(e)}>
+            <a className={this.props.className + " cqrs-link"} style={{cursor:"pointer"}} onClick={(e) => this._handleClick(e)}>
                 {children}
             </a>
         )

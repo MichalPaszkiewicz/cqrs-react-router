@@ -113,7 +113,7 @@ var Link = (function (_super) {
     Link.prototype.render = function () {
         var _this = this;
         var _a = this.props, to = _a.to, children = _a.children;
-        return (React.createElement("a", { className: this.props.className, onClick: function (e) { return _this._handleClick(e); } }, children));
+        return (React.createElement("a", { className: this.props.className + " cqrs-link", style: { cursor: "pointer" }, onClick: function (e) { return _this._handleClick(e); } }, children));
     };
     return Link;
 }(React.Component));

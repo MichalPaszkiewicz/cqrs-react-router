@@ -84,6 +84,9 @@ var ApplicationService = (function () {
     ApplicationService.prototype.onEventStored = function (callback) {
         this._onEventStoredHandlers.push(callback);
     };
+    ApplicationService.handleCommand = function (command, callback) {
+        ApplicationService.Instance.handleCommand(command, callback);
+    };
     ApplicationService.prototype.handleCommand = function (command, callback) {
         var self = this;
         try {
