@@ -5,9 +5,6 @@ cqrs-react-router is a library that will help you easily set up a CQRS/event sou
 [![Build Status](https://travis-ci.org/MichalPaszkiewicz/cqrs-react-router.svg?branch=master)](https://travis-ci.org/MichalPaszkiewicz/cqrs-react-router)
 [![npm version](https://badge.fury.io/js/cqrs-react-router.svg)](https://badge.fury.io/js/cqrs-react-router)
 
-## breaking change ##
-v2.0.0 is a breaking change, so please make sure you go through your code and fix any reference issues.
-
 ## typescript support ##
 cqrs-react-router is written in typescript and therefore will always support typescript
 
