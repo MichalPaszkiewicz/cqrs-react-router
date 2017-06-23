@@ -23,6 +23,7 @@ var ApplicationService = (function () {
         this._domainService = new domainservice_1.DomainService(this._eventStore);
         this._domainErrorHandlers = [];
         this._onEventStoredHandlers = [];
+        this._onCommandValidatedHandlers = [];
         var self = this;
         self._eventStore.onEventStored(function (event) {
             self._views.forEach(function (view) {
@@ -61,6 +62,7 @@ var ApplicationService = (function () {
         this._domainService = new domainservice_1.DomainService(this._eventStore);
         this._domainErrorHandlers = [];
         this._onEventStoredHandlers = [];
+        this._onCommandValidatedHandlers = [];
     };
     ApplicationService.prototype.reset = function () {
         var self = this;
@@ -80,6 +82,9 @@ var ApplicationService = (function () {
     };
     ApplicationService.prototype.onDomainError = function (callback) {
         this._domainErrorHandlers.push(callback);
+    };
+    ApplicationService.prototype.onCommandValidated = function (callback) {
+        this._onCommandValidatedHandlers.push(callback);
     };
     ApplicationService.prototype.onEventStored = function (callback) {
         this._onEventStoredHandlers.push(callback);
@@ -102,6 +107,9 @@ var ApplicationService = (function () {
                 return;
             }
         }
+        this._onCommandValidatedHandlers.forEach(function (ocvh) {
+            ocvh(command);
+        });
         var commandHandlersOfName = self._commandHandlers.filter(function (ch) { return ch.commandNames.some(function (cn) { return cn == command.name; }); });
         if (commandHandlersOfName.length == 0) {
             throw new domainerror_1.DomainError("no command handler registered for command of name \"" + command.name + "\"");

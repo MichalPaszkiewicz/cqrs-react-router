@@ -41,6 +41,7 @@ export class ApplicationService{
     private _domainService: DomainService = new DomainService(this._eventStore);
     private _domainErrorHandlers: ((error: DomainError) => void)[] = [];
     private _onEventStoredHandlers: ((event: IAmADomainEvent) => void)[] = [];
+    private _onCommandValidatedHandlers: ((command: IAmACommand) => void)[] = [];
 
     clear(){
         this._commandHandlerTypes = [];
@@ -52,6 +53,7 @@ export class ApplicationService{
         this._domainService = new DomainService(this._eventStore);
         this._domainErrorHandlers = [];
         this._onEventStoredHandlers = [];
+        this._onCommandValidatedHandlers = [];
     }
 
     constructor() {
@@ -91,6 +93,10 @@ export class ApplicationService{
         this._domainErrorHandlers.push(callback);
     }
 
+    onCommandValidated(callback: (command: IAmACommand) => void){
+        this._onCommandValidatedHandlers.push(callback);
+    }
+
     onEventStored(callback: (event: IAmADomainEvent) => void){
         this._onEventStoredHandlers.push(callback);
     }
@@ -115,6 +121,10 @@ export class ApplicationService{
                 return;
             }
         }
+
+        this._onCommandValidatedHandlers.forEach((ocvh) => {
+            ocvh(command);
+        });
 
         var commandHandlersOfName = self._commandHandlers.filter((ch) => ch.commandNames.some((cn) => cn == command.name));
 

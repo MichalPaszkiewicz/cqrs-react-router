@@ -64,7 +64,7 @@ class SomeCommandHandler implements IAmACommandHandler{
     }
 }
 
-var appService = new ApplicationService();
+var appService = ApplicationService.Instance;
 
 appService.registerCommandHandler(SomeCommandHandler);
 appService.registerView(SomeView);
