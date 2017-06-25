@@ -24,6 +24,8 @@ var ApplicationService = (function () {
         this._domainErrorHandlers = [];
         this._onEventStoredHandlers = [];
         this._onCommandValidatedHandlers = [];
+        this._onCommandHandledHandlers = [];
+        this._preCommandValidatingHandlers = [];
         var self = this;
         self._eventStore.onEventStored(function (event) {
             self._views.forEach(function (view) {
@@ -63,6 +65,8 @@ var ApplicationService = (function () {
         this._domainErrorHandlers = [];
         this._onEventStoredHandlers = [];
         this._onCommandValidatedHandlers = [];
+        this._onCommandHandledHandlers = [];
+        this._preCommandValidatingHandlers = [];
     };
     ApplicationService.prototype.reset = function () {
         var self = this;
@@ -83,8 +87,14 @@ var ApplicationService = (function () {
     ApplicationService.prototype.onDomainError = function (callback) {
         this._domainErrorHandlers.push(callback);
     };
+    ApplicationService.prototype.preCommandValidated = function (callback) {
+        this._preCommandValidatingHandlers.push(callback);
+    };
     ApplicationService.prototype.onCommandValidated = function (callback) {
         this._onCommandValidatedHandlers.push(callback);
+    };
+    ApplicationService.prototype.onCommandHandled = function (callback) {
+        this._onCommandHandledHandlers.push(callback);
     };
     ApplicationService.prototype.onEventStored = function (callback) {
         this._onEventStoredHandlers.push(callback);
@@ -136,6 +146,9 @@ var ApplicationService = (function () {
                     throw error;
                 }
             }
+        });
+        this._onCommandHandledHandlers.forEach(function (ochh) {
+            ochh(command);
         });
     };
     ApplicationService.prototype.validateHypotheticalCommand = function (command, onError, callback) {

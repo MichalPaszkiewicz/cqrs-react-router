@@ -42,6 +42,8 @@ export class ApplicationService{
     private _domainErrorHandlers: ((error: DomainError) => void)[] = [];
     private _onEventStoredHandlers: ((event: IAmADomainEvent) => void)[] = [];
     private _onCommandValidatedHandlers: ((command: IAmACommand) => void)[] = [];
+    private _onCommandHandledHandlers: ((command: IAmACommand) => void)[] = [];
+    private _preCommandValidatingHandlers: ((command: IAmACommand) => void)[] = [];
 
     clear(){
         this._commandHandlerTypes = [];
@@ -54,6 +56,8 @@ export class ApplicationService{
         this._domainErrorHandlers = [];
         this._onEventStoredHandlers = [];
         this._onCommandValidatedHandlers = [];
+        this._onCommandHandledHandlers = [];
+        this._preCommandValidatingHandlers = [];
     }
 
     constructor() {
@@ -93,8 +97,16 @@ export class ApplicationService{
         this._domainErrorHandlers.push(callback);
     }
 
+    preCommandValidated(callback: (command: IAmACommand) => void){
+        this._preCommandValidatingHandlers.push(callback);
+    }
+
     onCommandValidated(callback: (command: IAmACommand) => void){
         this._onCommandValidatedHandlers.push(callback);
+    }
+
+    onCommandHandled(callback: (command: IAmACommand) => void){
+        this._onCommandHandledHandlers.push(callback);
     }
 
     onEventStored(callback: (event: IAmADomainEvent) => void){
@@ -107,6 +119,8 @@ export class ApplicationService{
 
     handleCommand(command: IAmACommand, callback?: (command: IAmACommand) => void){
         var self = this;
+
+
 
         try{
             self._commandValidators
@@ -156,6 +170,10 @@ export class ApplicationService{
                     throw error;
                 }
             }
+        });
+
+        this._onCommandHandledHandlers.forEach((ochh) => {
+            ochh(command);
         });
     }
 

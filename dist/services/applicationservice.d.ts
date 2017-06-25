@@ -22,13 +22,17 @@ export declare class ApplicationService {
     private _domainErrorHandlers;
     private _onEventStoredHandlers;
     private _onCommandValidatedHandlers;
+    private _onCommandHandledHandlers;
+    private _preCommandValidatingHandlers;
     clear(): void;
     constructor();
     reset(): void;
     replayEvents(finalTime?: ClockDate, millisecondsInterval?: number): void;
     hardReplayEvents(finalTime?: ClockDate, millisecondsInterval?: number): void;
     onDomainError(callback: (error: DomainError) => void): void;
+    preCommandValidated(callback: (command: IAmACommand) => void): void;
     onCommandValidated(callback: (command: IAmACommand) => void): void;
+    onCommandHandled(callback: (command: IAmACommand) => void): void;
     onEventStored(callback: (event: IAmADomainEvent) => void): void;
     static handleCommand(command: IAmACommand, callback?: (command: IAmACommand) => void): void;
     handleCommand(command: IAmACommand, callback?: (command: IAmACommand) => void): void;
