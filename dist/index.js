@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 var clock_1 = require("./helpers/clock");
 exports.Clock = clock_1.Clock;
 exports.ClockDate = clock_1.ClockDate;

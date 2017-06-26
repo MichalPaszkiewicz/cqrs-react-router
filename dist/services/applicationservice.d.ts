@@ -29,6 +29,8 @@ export declare class ApplicationService {
     reset(): void;
     replayEvents(finalTime?: ClockDate, millisecondsInterval?: number): void;
     hardReplayEvents(finalTime?: ClockDate, millisecondsInterval?: number): void;
+    replayEventsUpTo(domainEvent: IAmADomainEvent, millisecondsInterval?: number, inclusive?: boolean): void;
+    hardReplayEventsUpTo(domainEvent: IAmADomainEvent, millisecondsInterval?: number, inclusive?: boolean): void;
     onDomainError(callback: (error: DomainError) => void): void;
     preCommandValidated(callback: (command: IAmACommand) => void): void;
     onCommandValidated(callback: (command: IAmACommand) => void): void;

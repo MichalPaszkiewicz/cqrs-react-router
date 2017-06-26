@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 exports.matchPath = function (pathHash, options) {
     var _a = options.exact, exact = _a === void 0 ? false : _a, path = options.path;
     var pathname = pathHash.substr(2);

@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 var domainerror_1 = require("../objects/domainerror");
 var domainservice_1 = require("../services/domainservice");
 var eventstore_1 = require("../services/eventstore");
@@ -83,6 +84,17 @@ var ApplicationService = (function () {
         this._domainService.clearAggregateRoots();
         this.reset();
         this._eventStore.replayEvents(finalTime, millisecondsInterval, true);
+    };
+    ApplicationService.prototype.replayEventsUpTo = function (domainEvent, millisecondsInterval, inclusive) {
+        if (inclusive === void 0) { inclusive = true; }
+        this.reset();
+        this._eventStore.replayEventsUpTo(domainEvent, millisecondsInterval, false, inclusive);
+    };
+    ApplicationService.prototype.hardReplayEventsUpTo = function (domainEvent, millisecondsInterval, inclusive) {
+        if (inclusive === void 0) { inclusive = true; }
+        this._domainService.clearAggregateRoots();
+        this.reset();
+        this._eventStore.replayEventsUpTo(domainEvent, millisecondsInterval, true, inclusive);
     };
     ApplicationService.prototype.onDomainError = function (callback) {
         this._domainErrorHandlers.push(callback);

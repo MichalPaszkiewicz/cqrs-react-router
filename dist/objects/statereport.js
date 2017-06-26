@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 var StateReport = (function () {
     function StateReport(actions) {
         this.actions = actions;

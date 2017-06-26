@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 var EventStore = (function () {
     function EventStore() {
         this._events = [];
@@ -36,6 +37,37 @@ var EventStore = (function () {
         if (hardReplay) {
             self._events = eventsToReplay;
         }
+    };
+    EventStore.prototype.replayEventsUpTo = function (domainEvent, millisecondsInterval, hardReplay, inclusive) {
+        if (hardReplay === void 0) { hardReplay = false; }
+        if (inclusive === void 0) { inclusive = true; }
+        var self = this;
+        var replayedEvents = [];
+        function replayEvent(index) {
+            if ((!inclusive) && (self._events[index] == domainEvent)) {
+                if (hardReplay) {
+                    self._events = replayedEvents;
+                }
+                return;
+            }
+            self._onEventStoredEvents.forEach(function (callback) {
+                callback(self._events[index]);
+            });
+            replayedEvents.push(self._events[index]);
+            if (self._events[index] == domainEvent) {
+                if (hardReplay) {
+                    self._events = replayedEvents;
+                }
+                return;
+            }
+            if (millisecondsInterval) {
+                setTimeout(function () { return replayEvent(index + 1); }, millisecondsInterval);
+            }
+            else {
+                replayEvent(index + 1);
+            }
+        }
+        replayEvent(0);
     };
     EventStore.prototype.onEventStored = function (callback) {
         this._onEventStoredEvents.push(callback);

@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 var DomainService = (function () {
     function DomainService(eventStore) {
         this._aggregateRoots = [];

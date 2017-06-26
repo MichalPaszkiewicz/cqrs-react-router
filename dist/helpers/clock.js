@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 var ClockDate = (function () {
     function ClockDate(year, month, day, hour, minutes, seconds, milliseconds) {
         if (hour === void 0) { hour = 0; }

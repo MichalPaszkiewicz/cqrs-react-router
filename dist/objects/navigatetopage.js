@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 exports.NAVIGATE_TO_PAGE_COMMAND_NAME = "Navigate to page";
 var NavigateToPageCommand = (function () {
     function NavigateToPageCommand(destination) {

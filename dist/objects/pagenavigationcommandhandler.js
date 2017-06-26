@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 var navigatetopage_1 = require("./navigatetopage");
 var pagenavigationaggregate_1 = require("./pagenavigationaggregate");
 var PageNavigationCommandHandler = (function () {

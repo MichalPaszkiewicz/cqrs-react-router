@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 var guid_1 = require("../helpers/guid");
 var AggregateRoot = (function () {
     function AggregateRoot(id) {

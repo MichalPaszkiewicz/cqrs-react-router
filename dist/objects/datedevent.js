@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 var clock_1 = require("../helpers/clock");
 var DatedEvent = (function () {
     function DatedEvent() {

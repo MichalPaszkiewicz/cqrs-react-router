@@ -46,6 +46,43 @@ export class EventStore{
         }
     }
 
+    replayEventsUpTo(domainEvent: IAmADomainEvent, millisecondsInterval?: number, hardReplay: boolean = false, inclusive: boolean = true){
+        var self = this;
+
+        var replayedEvents: IAmADomainEvent[] = [];
+        
+        function replayEvent(index){
+
+            if((!inclusive) && (self._events[index] == domainEvent)){
+                if(hardReplay){
+                    self._events = replayedEvents;
+                }
+                return;
+            }
+
+            self._onEventStoredEvents.forEach((callback) => {
+                callback(self._events[index]);
+            });
+
+            replayedEvents.push(self._events[index]);
+
+            if(self._events[index] == domainEvent){
+                if(hardReplay){
+                    self._events = replayedEvents;
+                }
+                return;
+            }
+
+            if(millisecondsInterval){
+                setTimeout(() => replayEvent(index + 1), millisecondsInterval);
+            }
+            else{
+                replayEvent(index + 1);
+            }
+        }
+        replayEvent(0);
+    }
+
     onEventStored(callback: (event: IAmADomainEvent) => void){
         this._onEventStoredEvents.push(callback);
     }   

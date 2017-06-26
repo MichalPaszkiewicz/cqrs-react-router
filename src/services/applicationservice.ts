@@ -93,6 +93,17 @@ export class ApplicationService{
         this._eventStore.replayEvents(finalTime, millisecondsInterval, true);
     }
 
+    replayEventsUpTo(domainEvent: IAmADomainEvent, millisecondsInterval?: number, inclusive: boolean = true){
+        this.reset();
+        this._eventStore.replayEventsUpTo(domainEvent, millisecondsInterval, false, inclusive);
+    }
+
+    hardReplayEventsUpTo(domainEvent: IAmADomainEvent, millisecondsInterval?: number, inclusive: boolean = true){
+        this._domainService.clearAggregateRoots();
+        this.reset();
+        this._eventStore.replayEventsUpTo(domainEvent, millisecondsInterval, true, inclusive);
+    }
+
     onDomainError(callback: (error: DomainError) => void){
         this._domainErrorHandlers.push(callback);
     }
