@@ -17,7 +17,7 @@ class ViewSubscriber{
 export class ApplicationService{
     private static _instance: ApplicationService;
     static get Instance(): ApplicationService{
-        if(window){
+        if(typeof window == "object"){
             var appPublicString = "_cqrs_ApplicationService";
             if(!window[appPublicString]){
                 window[appPublicString] = new ApplicationService();
@@ -130,8 +130,6 @@ export class ApplicationService{
 
     handleCommand(command: IAmACommand, callback?: (command: IAmACommand) => void){
         var self = this;
-
-
 
         try{
             self._commandValidators

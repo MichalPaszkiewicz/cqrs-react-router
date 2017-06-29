@@ -40,7 +40,7 @@ var ApplicationService = (function () {
     }
     Object.defineProperty(ApplicationService, "Instance", {
         get: function () {
-            if (window) {
+            if (typeof window == "object") {
                 var appPublicString = "_cqrs_ApplicationService";
                 if (!window[appPublicString]) {
                     window[appPublicString] = new ApplicationService();

@@ -109,7 +109,7 @@ var Link = (function (_super) {
             if (self.props.onClick) {
                 self.props.onClick(e);
             }
-            event.preventDefault();
+            e.preventDefault();
             if (self.props.to) {
                 applicationservice_1.ApplicationService.Instance.handleCommand(new navigatetopage_1.NavigateToPageCommand(self.props.to));
             }

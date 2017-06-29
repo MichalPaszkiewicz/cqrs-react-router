@@ -122,7 +122,7 @@ export class Link extends React.Component<LinkProps, null>{
         if(self.props.onClick){
             self.props.onClick(e);
         }
-        event.preventDefault()
+        e.preventDefault()
         if(self.props.to){
             ApplicationService.Instance.handleCommand(new NavigateToPageCommand(self.props.to));
         }
