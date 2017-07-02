@@ -1,8 +1,8 @@
 import { IAmADomainEvent } from "../interfaces/iamadomainevent";
 export declare class StateReport {
-    actions: IAmADomainEvent[];
+    events: IAmADomainEvent[];
     url: string;
     hash: string;
-    constructor(actions: IAmADomainEvent[]);
+    constructor(events: IAmADomainEvent[]);
     toString(): string;
 }
