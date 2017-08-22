@@ -39,20 +39,21 @@ var historyReplace = function (path) {
 var Route = (function (_super) {
     __extends(Route, _super);
     function Route(props) {
-        return _super.call(this, props) || this;
+        var _this = _super.call(this, props) || this;
+        var self = _this;
+        var eventListener = function () { return self.handlePop(); };
+        self["componentDidMount"] = function () {
+            register(self);
+            addEventListener("popstate", eventListener);
+        };
+        self["componentWillUnMount"] = function () {
+            removeEventListener("popstate", eventListener);
+            unregister(self);
+        };
+        return _this;
     }
     Route.prototype.handlePop = function () {
         this.forceUpdate();
-    };
-    Route.prototype.componentWillMount = function () {
-        var self = this;
-        register(self);
-        addEventListener("popstate", function () { return self.handlePop(); });
-    };
-    Route.prototype.componentWillUnMount = function () {
-        var self = this;
-        removeEventListener("popstate", function () { return self.handlePop(); });
-        unregister(self);
     };
     Route.prototype.matchesPath = function () {
         var self = this;

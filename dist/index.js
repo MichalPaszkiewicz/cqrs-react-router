@@ -36,4 +36,6 @@ var datedevent_1 = require("./objects/datedevent");
 exports.DatedEvent = datedevent_1.DatedEvent;
 var auditedevent_1 = require("./objects/auditedevent");
 exports.AuditedEvent = auditedevent_1.AuditedEvent;
+var pagenavigated_1 = require("./objects/pagenavigated");
+exports.PageNavigatedEvent = pagenavigated_1.PageNavigatedEvent;
 //# sourceMappingURL=index.js.map

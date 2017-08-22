@@ -23,7 +23,6 @@ var ApplicationService = (function () {
         this._eventStore = new eventstore_1.EventStore();
         this._domainService = new domainservice_1.DomainService(this._eventStore);
         this._domainErrorHandlers = [];
-        this._onEventStoredHandlers = [];
         this._onCommandValidatedHandlers = [];
         this._onCommandHandledHandlers = [];
         this._preCommandValidatingHandlers = [];
@@ -64,7 +63,6 @@ var ApplicationService = (function () {
         this._eventStore = new eventstore_1.EventStore();
         this._domainService = new domainservice_1.DomainService(this._eventStore);
         this._domainErrorHandlers = [];
-        this._onEventStoredHandlers = [];
         this._onCommandValidatedHandlers = [];
         this._onCommandHandledHandlers = [];
         this._preCommandValidatingHandlers = [];
@@ -109,7 +107,7 @@ var ApplicationService = (function () {
         this._onCommandHandledHandlers.push(callback);
     };
     ApplicationService.prototype.onEventStored = function (callback) {
-        this._onEventStoredHandlers.push(callback);
+        this._eventStore.onEventStored(callback);
     };
     ApplicationService.handleCommand = function (command, callback) {
         ApplicationService.Instance.handleCommand(command, callback);
@@ -118,7 +116,7 @@ var ApplicationService = (function () {
         var self = this;
         try {
             self._commandValidators
-                .filter(function (cv) { return cv.commandNames.some(function (cn) { return cn == command.name; }); })
+                .filter(function (cv) { return cv.commandNames.some(function (cn) { return cn == command.name || cn == "*"; }); })
                 .forEach(function (cv) { return cv.validate(command); });
         }
         catch (error) {
@@ -157,6 +155,7 @@ var ApplicationService = (function () {
                 else {
                     throw error;
                 }
+                return;
             }
         });
         this._onCommandHandledHandlers.forEach(function (ochh) {
@@ -171,7 +170,7 @@ var ApplicationService = (function () {
         var tempCommandHandlers = self._commandHandlerTypes.map(function (cht) { return new cht(); });
         try {
             tempCommandValidators
-                .filter(function (cv) { return cv.commandNames.some(function (cn) { return cn == command.name; }); })
+                .filter(function (cv) { return cv.commandNames.some(function (cn) { return cn == command.name || cn == "*"; }); })
                 .forEach(function (cv) { return cv.validate(command); });
             var commandHandlersOfName = tempCommandHandlers.filter(function (ch) { return ch.commandNames.some(function (cn) { return cn == command.name; }); });
             if (commandHandlersOfName.length == 0) {
@@ -254,9 +253,6 @@ var ApplicationService = (function () {
     ApplicationService.prototype.storeEvent = function (event) {
         this._domainService.applyEventToAllAggregates(event);
         this._eventStore.storeEvent(event);
-        this._onEventStoredHandlers.forEach(function (callback) {
-            callback(event);
-        });
     };
     return ApplicationService;
 }());

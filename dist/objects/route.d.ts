@@ -13,8 +13,6 @@ export declare class Route extends React.Component<RouteProps, any> {
     id: string;
     constructor(props: RouteProps);
     handlePop(): void;
-    componentWillMount(): void;
-    componentWillUnMount(): void;
     matchesPath(): boolean;
     firstRegistered(): boolean;
     render(): JSX.Element;

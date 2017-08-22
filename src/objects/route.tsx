@@ -37,22 +37,23 @@ export class Route extends React.Component<RouteProps, any>{
 
     constructor(props: RouteProps){
         super(props);
+        var self = this;
+
+        var eventListener = () => self.handlePop();
+
+        self["componentDidMount"] = () => {
+            register(self);     
+            addEventListener("popstate", eventListener);
+        }
+
+        self["componentWillUnMount"] = () => {
+            removeEventListener("popstate", eventListener);
+            unregister(self);                                    
+        }
     }
 
     handlePop(){
         this.forceUpdate();
-    }
-
-    componentWillMount(){
-        var self = this;
-        register(self);     
-        addEventListener("popstate", () => self.handlePop());
-    }
-
-    componentWillUnMount(){
-        var self = this;
-        removeEventListener("popstate", () => self.handlePop());
-        unregister(self);                        
     }
 
     matchesPath(){

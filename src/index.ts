@@ -17,3 +17,4 @@ export {StateReport} from "./objects/statereport";
 export {DatedEvent} from "./objects/datedevent";
 export {AuditedEvent} from "./objects/auditedevent";
 export {IAmAValueObject} from "./interfaces/iamavalueobject";
+export {PageNavigatedEvent} from "./objects/pagenavigated";

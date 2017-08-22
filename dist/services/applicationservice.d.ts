@@ -20,7 +20,6 @@ export declare class ApplicationService {
     private _eventStore;
     private _domainService;
     private _domainErrorHandlers;
-    private _onEventStoredHandlers;
     private _onCommandValidatedHandlers;
     private _onCommandHandledHandlers;
     private _preCommandValidatingHandlers;

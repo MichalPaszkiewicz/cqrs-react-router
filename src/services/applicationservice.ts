@@ -40,7 +40,6 @@ export class ApplicationService{
     private _eventStore: EventStore = new EventStore();    
     private _domainService: DomainService = new DomainService(this._eventStore);
     private _domainErrorHandlers: ((error: DomainError) => void)[] = [];
-    private _onEventStoredHandlers: ((event: IAmADomainEvent) => void)[] = [];
     private _onCommandValidatedHandlers: ((command: IAmACommand) => void)[] = [];
     private _onCommandHandledHandlers: ((command: IAmACommand) => void)[] = [];
     private _preCommandValidatingHandlers: ((command: IAmACommand) => void)[] = [];
@@ -54,7 +53,6 @@ export class ApplicationService{
         this._eventStore = new EventStore();
         this._domainService = new DomainService(this._eventStore);
         this._domainErrorHandlers = [];
-        this._onEventStoredHandlers = [];
         this._onCommandValidatedHandlers = [];
         this._onCommandHandledHandlers = [];
         this._preCommandValidatingHandlers = [];
@@ -121,7 +119,7 @@ export class ApplicationService{
     }
 
     onEventStored(callback: (event: IAmADomainEvent) => void){
-        this._onEventStoredHandlers.push(callback);
+        this._eventStore.onEventStored(callback);
     }
 
     static handleCommand(command: IAmACommand, callback?: (command: IAmACommand) => void){
@@ -133,7 +131,7 @@ export class ApplicationService{
 
         try{
             self._commandValidators
-                .filter((cv) => cv.commandNames.some((cn) => cn == command.name))
+                .filter((cv) => cv.commandNames.some((cn) => cn == command.name || cn == "*"))
                 .forEach((cv) => cv.validate(command));
         }
         catch(error){
@@ -178,6 +176,7 @@ export class ApplicationService{
                 else{
                     throw error;
                 }
+                return;
             }
         });
 
@@ -195,7 +194,7 @@ export class ApplicationService{
 
         try{
             tempCommandValidators
-                .filter((cv) => cv.commandNames.some((cn) => cn == command.name))
+                .filter((cv) => cv.commandNames.some((cn) => cn == command.name || cn == "*"))
                 .forEach((cv) => cv.validate(command));
 
             var commandHandlersOfName = tempCommandHandlers.filter((ch) => ch.commandNames.some((cn) => cn == command.name));
@@ -297,8 +296,5 @@ export class ApplicationService{
     storeEvent(event: IAmADomainEvent){
         this._domainService.applyEventToAllAggregates(event);
         this._eventStore.storeEvent(event);
-        this._onEventStoredHandlers.forEach((callback) => {
-            callback(event);
-        });
     }
 }
