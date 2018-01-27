@@ -37,8 +37,6 @@ export class ApplicationService{
     private _viewTypes: {new(): View}[] = [];
     private _views: View[] = [];
     private _viewSubscribers: ViewSubscriber[] = [];
-    private _eventStore: EventStore = new EventStore();    
-    private _domainService: DomainService = new DomainService(this._eventStore);
     private _domainErrorHandlers: ((error: DomainError) => void)[] = [];
     private _onCommandValidatedHandlers: ((command: IAmACommand) => void)[] = [];
     private _onCommandHandledHandlers: ((command: IAmACommand) => void)[] = [];
@@ -58,7 +56,8 @@ export class ApplicationService{
         this._preCommandValidatingHandlers = [];
     }
 
-    constructor() {
+    constructor(private _eventStore = new EventStore(),
+                private _domainService: DomainService = new DomainService(_eventStore)) {
         var self = this;
         self._eventStore.onEventStored((event) => {
             self._views.forEach((view: View) => {
