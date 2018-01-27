@@ -391,22 +391,6 @@ test("application service handles events from injected event store", () => {
     testActionStore.storeEvent(testAction);
     // Assert: ensure callback called
     expect(callback).toBeCalled();
-    expect(callback.mock.calls.length).toBe(1);          
-})
-
-test("application service handles events from injected event store", () => {
-    // Arrange: setup constants
-    const callback = jest.fn(); 
-    const aggregateID = "123";
-    const testAction = new TestAction(aggregateID);
-    const testActionStore = new EventStore();
-    const testDomainService = new DomainService(testActionStore)
-    const testApplicationService = new ApplicationService(testActionStore, testDomainService);
-    testApplicationService.onEventStored(callback)
-    // Act: pass event to store
-    testActionStore.storeEvent(testAction);
-    // Assert: ensure callback called
-    expect(callback).toBeCalled();
     expect(callback.mock.calls.length).toBe(1);  
     testDomainService.getAggregateRoot(TestAggregateRoot, (ar => {
         expect(ar).toBeInstanceOf(TestAggregateRoot);
