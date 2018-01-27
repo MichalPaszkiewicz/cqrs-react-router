@@ -1,4 +1,4 @@
-export {Clock, ClockDate} from "./helpers/clock"
+export {Clock, ClockDate, fixDates, ClockDateRange} from "./helpers/clock"
 export {Guid} from "./helpers/guid";
 export {IAmACommand} from "./interfaces/iamacommand";
 export {IAmADomainEvent} from "./interfaces/iamadomainevent";

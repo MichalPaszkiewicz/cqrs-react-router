@@ -9,8 +9,21 @@ var AggregateRoot = (function () {
         this._eventStore = eventStore;
     };
     AggregateRoot.prototype.storeEvent = function (event) {
-        this.applyEvent(event);
-        this._eventStore.storeEvent(event);
+        var self = this;
+        self.applyEvent(event);
+        //custom apply methods
+        var fixedEventName = event.name.toLowerCase().replace(/ /g, '');
+        var keys = [];
+        for (var key in self) {
+            keys.push(key);
+        }
+        keys.filter(function (p) { return typeof (self[p]) == "function"; })
+            .filter(function (p) { return p.toLowerCase().indexOf("apply") > -1; })
+            .filter(function (p) { return p.toLowerCase().indexOf(fixedEventName) > -1; })
+            .forEach(function (p) {
+            self[p](event);
+        });
+        self._eventStore.storeEvent(event);
     };
     return AggregateRoot;
 }());

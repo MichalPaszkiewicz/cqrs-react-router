@@ -3,6 +3,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var clock_1 = require("./helpers/clock");
 exports.Clock = clock_1.Clock;
 exports.ClockDate = clock_1.ClockDate;
+exports.fixDates = clock_1.fixDates;
+exports.ClockDateRange = clock_1.ClockDateRange;
 var guid_1 = require("./helpers/guid");
 exports.Guid = guid_1.Guid;
 var aggregateroot_1 = require("./objects/aggregateroot");

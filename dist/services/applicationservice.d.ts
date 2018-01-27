@@ -53,4 +53,5 @@ export declare class ApplicationService {
     getView(name: string): View;
     getStateReport(): StateReport;
     storeEvent(event: IAmADomainEvent): void;
+    storeEvents(events: IAmADomainEvent[]): void;
 }

@@ -5,7 +5,7 @@ import {View} from "../objects/view";
 import {DomainError} from "../objects/domainerror";
 import {DomainService} from "../services/domainservice";
 import {EventStore} from "../services/eventstore";
-import {ClockDate} from "../helpers/clock";
+import {ClockDate, fixDates} from "../helpers/clock";
 import {CommandValidator} from "../objects/commandvalidator";
 import {StateReport} from "../objects/statereport";
 import {Page} from "../objects/page";
@@ -127,6 +127,7 @@ export class ApplicationService{
     }
 
     handleCommand(command: IAmACommand, callback?: (command: IAmACommand) => void){
+        fixDates(command);
         var self = this;
 
         try{
@@ -155,6 +156,8 @@ export class ApplicationService{
 
         var handlersCount = commandHandlersOfName.length;
 
+        var errorThrownInHandling = false;
+
         commandHandlersOfName.forEach((ch) =>{
             try{
                 ch.handle(command, self._domainService,  () => {
@@ -165,6 +168,12 @@ export class ApplicationService{
                             callback(command);
                         }
                     }                
+                }, (name: string, viewCallBack: (view: View) => void) => {
+                    self._views.forEach(v => {
+                        if(v.name == name){
+                            viewCallBack(v);
+                        }
+                    })
                 });
             }
             catch(error){
@@ -172,6 +181,7 @@ export class ApplicationService{
                     self._domainErrorHandlers.forEach((deh) => {
                         deh(error as DomainError);
                     }); 
+                    errorThrownInHandling = true;
                 }
                 else{
                     throw error;
@@ -180,12 +190,17 @@ export class ApplicationService{
             }
         });
 
+        if(errorThrownInHandling){
+            return;
+        }
+
         this._onCommandHandledHandlers.forEach((ochh) => {
             ochh(command);
         });
     }
 
     validateHypotheticalCommand(command: IAmACommand, onError: (error: DomainError) => void, callback?: (command: IAmACommand) => void){
+        fixDates(command);
         var self = this;
         var tempEventStore = new EventStore();
         var tempDomainService = new DomainService(tempEventStore);
@@ -294,7 +309,15 @@ export class ApplicationService{
     }
 
     storeEvent(event: IAmADomainEvent){
+        fixDates(event);
         this._domainService.applyEventToAllAggregates(event);
         this._eventStore.storeEvent(event);
+    }
+
+    storeEvents(events: IAmADomainEvent[]){
+        var self = this;
+        events.forEach((e) => {
+            self.storeEvent(e);
+        });
     }
 }

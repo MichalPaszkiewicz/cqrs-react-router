@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var domainerror_1 = require("../objects/domainerror");
 var domainservice_1 = require("../services/domainservice");
 var eventstore_1 = require("../services/eventstore");
+var clock_1 = require("../helpers/clock");
 var statereport_1 = require("../objects/statereport");
 var ViewSubscriber = (function () {
     function ViewSubscriber(viewName, callback) {
@@ -113,6 +114,7 @@ var ApplicationService = (function () {
         ApplicationService.Instance.handleCommand(command, callback);
     };
     ApplicationService.prototype.handleCommand = function (command, callback) {
+        clock_1.fixDates(command);
         var self = this;
         try {
             self._commandValidators
@@ -135,6 +137,7 @@ var ApplicationService = (function () {
             throw new domainerror_1.DomainError("no command handler registered for command of name \"" + command.name + "\"");
         }
         var handlersCount = commandHandlersOfName.length;
+        var errorThrownInHandling = false;
         commandHandlersOfName.forEach(function (ch) {
             try {
                 ch.handle(command, self._domainService, function () {
@@ -144,6 +147,12 @@ var ApplicationService = (function () {
                             callback(command);
                         }
                     }
+                }, function (name, viewCallBack) {
+                    self._views.forEach(function (v) {
+                        if (v.name == name) {
+                            viewCallBack(v);
+                        }
+                    });
                 });
             }
             catch (error) {
@@ -151,6 +160,7 @@ var ApplicationService = (function () {
                     self._domainErrorHandlers.forEach(function (deh) {
                         deh(error);
                     });
+                    errorThrownInHandling = true;
                 }
                 else {
                     throw error;
@@ -158,11 +168,15 @@ var ApplicationService = (function () {
                 return;
             }
         });
+        if (errorThrownInHandling) {
+            return;
+        }
         this._onCommandHandledHandlers.forEach(function (ochh) {
             ochh(command);
         });
     };
     ApplicationService.prototype.validateHypotheticalCommand = function (command, onError, callback) {
+        clock_1.fixDates(command);
         var self = this;
         var tempEventStore = new eventstore_1.EventStore();
         var tempDomainService = new domainservice_1.DomainService(tempEventStore);
@@ -251,8 +265,15 @@ var ApplicationService = (function () {
         return new statereport_1.StateReport(this._eventStore.getAllEvents());
     };
     ApplicationService.prototype.storeEvent = function (event) {
+        clock_1.fixDates(event);
         this._domainService.applyEventToAllAggregates(event);
         this._eventStore.storeEvent(event);
+    };
+    ApplicationService.prototype.storeEvents = function (events) {
+        var self = this;
+        events.forEach(function (e) {
+            self.storeEvent(e);
+        });
     };
     return ApplicationService;
 }());

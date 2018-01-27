@@ -1,4 +1,4 @@
-import {ClockDate, Clock} from "../../src/helpers/clock";
+import {ClockDate, Clock, fixDates, ClockDateRange} from "../../src/helpers/clock";
 
 test("now is correct current time for clock", () => {
     Clock.Instance.reset();
@@ -102,4 +102,50 @@ test("clock allows millisecond change", () => {
 
         expect(Clock.now().getTime()).toBeLessThan(now);
     }, 10)
+});
+
+test("fix date gets date from string", () => {
+    var date = new Date();
+    var stringDate: any = JSON.parse(JSON.stringify(date));
+
+    var clockDate = ClockDate.fromTicks(date.getTime());
+
+    var testObject = {date: stringDate};
+    fixDates(testObject);
+
+    expect(clockDate.isAt(testObject.date)).toBe(true);
+});
+
+test("fix date gets date from ClockDate", () => {
+    var date = Clock.now();
+
+    var testObject = {time: ClockDate.fromTicks(date.getTime())};
+    fixDates(testObject);
+
+    expect(date.isAt(testObject.time)).toBe(true);
+});
+
+test("fix date fixes object with clock date stringified, then parsed", () => {
+    var date = Clock.now();
+
+    var testObject = {time: date};
+    var stringTestObject = JSON.stringify(testObject);
+    var parsedTestObject = JSON.parse(stringTestObject);
+
+    fixDates(parsedTestObject);
+
+    expect(date.isAt(parsedTestObject.time)).toBe(true);
+});
+
+test("fix date fixes clockdate range", () => {
+    var range = new ClockDateRange(Clock.now(), Clock.now().addHours(1));
+
+    var testObject = {time: range};
+    var stringTestObject = JSON.stringify(testObject);
+    var parsedTestObject = JSON.parse(stringTestObject);
+
+    fixDates(parsedTestObject);
+
+    expect(range.StartTime.isAt(parsedTestObject.time.StartTime)).toBe(true);
+    expect(range.EndTime.isAt(parsedTestObject.time.EndTime)).toBe(true);
 });

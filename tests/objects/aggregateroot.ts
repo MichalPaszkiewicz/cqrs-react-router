@@ -57,3 +57,33 @@ test("aggregate root applies action", () => {
     expect(eventApplied).toBeTruthy();
 
 });
+
+test("aggregate root applies action in custom event applier", () => {
+    var eventStore = new EventStore();
+
+    let eventApplied = false;
+
+    class TestAggregate extends AggregateRoot{
+
+        ID="testAggregate";
+
+        applyEvent(action: IAmADomainEvent){
+        }
+
+        applyTestEvent(action: TestEvent){
+            eventApplied = true;            
+        }
+
+        doSomething(){
+            this.storeEvent(new TestEvent("testAggregate"));
+        }
+    }
+
+    const testAggregate = new TestAggregate();
+    testAggregate.attachEventStore(eventStore);
+
+    testAggregate.doSomething();
+
+    expect(eventApplied).toBeTruthy();
+
+});
